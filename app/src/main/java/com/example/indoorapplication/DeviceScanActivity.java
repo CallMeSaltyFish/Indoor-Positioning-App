@@ -16,7 +16,7 @@ import java.util.*;
 public class DeviceScanActivity extends ListActivity {
 
     private final UUID[] DEVICE_UUIDS = {UUID.fromString("01122334-4556-6778-899a-abbccddeeff0"),
-                                         UUID.fromString("5e9917bd-f3ac-41e6-8226-3fd79f340dc5") };
+            UUID.fromString("5e9917bd-f3ac-41e6-8226-3fd79f340dc5")};
     private BluetoothAdapter bluetoothAdapter;
     private boolean mScanning;
     private Handler handler;
@@ -29,8 +29,10 @@ public class DeviceScanActivity extends ListActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println("==================scan=========");
-                            System.out.println(device);
+                            if (true||device.getAddress() == "F9:C2:6E:7D:8A:7F") {
+                                System.out.println(device.getAddress());
+                                System.out.println(device.getUuids());
+                            }
 //                            leDeviceListAdapter.addDevice(device);
 //                            leDeviceListAdapter.notifyDataSetChanged();
                         }
