@@ -30,8 +30,10 @@ import java.util.*;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DeviceScanner extends Service {
 
-    private final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
-    private final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F"};
+    private static final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
+    private static final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F"};
+    // Stops scanning after given seconds.
+    private static final long SCAN_PERIOD = 100000;
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothScanner;
@@ -43,27 +45,34 @@ public class DeviceScanner extends Service {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            int idx = getDeviceIndex(result);
+            int idx = 0;//getDeviceIndex(result);
             if (idx != -1) {
                 System.out.println("Device: " + idx + " RSSI: " + result.getRssi());
+                scannerListener.updateRSSI(result.getRssi(),idx);
                 //((MainActivity)Con).getRSSITextView().setText("Device: " + idx + " RSSI: " + result.getRssi());
             }
         }
     };
-    private Binder RSSIBinder = new Binder(){
 
-    };
+    class ScannerBinder extends Binder {
+        public DeviceScanner getScanner() {
+            return DeviceScanner.this;
+        }
+    }
 
-    // Stops scanning after given seconds.
-    private static final long SCAN_PERIOD = 100000;
+    private ScannerListener scannerListener;
+
+    public interface ScannerListener {
+        void updateRSSI(final int rssi, final int idx);
+    }
+
+    public void setScannerListener(ScannerListener listener) {
+        scannerListener = listener;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return new Binder(){
-            public void getRSSI(){
-                return
-            }
-        };
+        return new ScannerBinder();
     }
 
     @Override
@@ -82,9 +91,6 @@ public class DeviceScanner extends Service {
         scanLeDevice(true);
     }
 
-//    public DeviceScanner(BluetoothAdapter adapter) {
-//
-//    }
 
     private void scanLeDevice(final boolean enable) {
         if (enable) {

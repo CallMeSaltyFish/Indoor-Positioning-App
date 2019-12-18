@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -28,6 +31,31 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     private TextView rssiTextView;
     private RecyclerView deviceView;
+    private DeviceScanner scanner;
+    private ServiceConnection scannerConn=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            scanner = ((DeviceScanner.ScannerBinder)iBinder).getScanner();
+            scanner.setScannerListener(new DeviceScanner.ScannerListener() {
+                @Override
+                public void updateRSSI(final int rssi, final int idx) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
+                        }
+                    });
+                }
+            });
+
+           // rssiTextView.setText(scannerbinder.getRSSI());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
 
     public MainActivity() {
         mainActivity = this;
@@ -62,9 +90,16 @@ public class MainActivity extends AppCompatActivity {
         startScan();
     }
 
+    @Override
+    protected void onDestroy() {
+        // TODO 自动生成的方法存根
+        super.onDestroy();
+        unbindService(scannerConn);
+    }
+
     private void startScan(){
         Intent startIntent = new Intent(this, DeviceScanner.class);
-        startService(startIntent);
+        bindService(startIntent,scannerConn,BIND_AUTO_CREATE);
     }
 
     public TextView getRSSITextView(){
