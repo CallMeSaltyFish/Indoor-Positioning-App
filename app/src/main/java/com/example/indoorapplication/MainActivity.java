@@ -29,12 +29,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.*;
 
+@SuppressLint("NewApi")
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
-    private final String[] DEVICE_UUIDS = {"01122334-4556-6778-899a-abbccddeeff0"};
-    private BluetoothManager btManager;
+    private BluetoothManager bluetoothManager;
+    private BluetoothAdapter bluetoothAdapter;
 
-    @SuppressLint("NewApi")
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,21 +49,16 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        btManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        BluetoothAdapter btAdapter = btManager.getAdapter();
-        if (!btAdapter.isEnabled()) {
+        bluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+        bluetoothAdapter = bluetoothManager.getAdapter();
+        if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, Activity.RESULT_OK);
         }
-        new DeviceScanActivity(btAdapter);
-//        BluetoothLeScanner btScanner = btAdapter.getBluetoothLeScanner();
-//        btScanner.startScan(new ScanCallback() {
-//            @Override
-//            public void onScanResult(int callbackType, ScanResult result) {
-//                super.onScanResult(callbackType, result);
-//                System.out.println("===============scan=====================");
-//                System.out.println(result);
-//            }
-//        });
+        startScan(bluetoothAdapter);
+    }
+
+    private void startScan(BluetoothAdapter adapter){
+        new DeviceScanActivity(adapter);
     }
 }
