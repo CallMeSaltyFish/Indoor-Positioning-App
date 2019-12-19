@@ -82,8 +82,8 @@ public class DeviceScanner extends Service {
         scanFilters = new ArrayList<>();
 //        for (String uuid : DEVICE_UUIDS)
 //            scanFilters.add(new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(uuid))).build());
-//        for (String addr : DEVICE_ADDRS)
-//            scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
+        for (String addr : DEVICE_ADDRS)
+            scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
         scanLeDevice(true);
     }
 
@@ -96,12 +96,12 @@ public class DeviceScanner extends Service {
                 @Override
                 public void run() {
                     // mScanning = false;
-                    bluetoothScanner.startScan(scanCallback);
+                    bluetoothScanner.startScan(scanFilters,scanSettings,scanCallback);
                 }
             }, SCAN_PERIOD);
 
             //mScanning = true;
-            bluetoothScanner.startScan(scanCallback);
+            bluetoothScanner.startScan(scanFilters,scanSettings,scanCallback);
         } else {
             // mScanning = false;
             bluetoothScanner.stopScan(scanCallback);
