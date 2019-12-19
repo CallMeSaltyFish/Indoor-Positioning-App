@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 @SuppressLint("NewApi")
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
-    private static MainActivity mainActivity;
+    private static final int REQUEST_LOCATION = 123;
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private TextView rssiTextView;
@@ -54,14 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-
-    public MainActivity() {
-        mainActivity = this;
-    }
-
-    public static MainActivity getMainActivity() {
-        return mainActivity;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
