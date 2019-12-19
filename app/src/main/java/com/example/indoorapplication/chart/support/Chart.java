@@ -1,6 +1,6 @@
 package com.example.indoorapplication.chart.support;
 
-import com.beiing.leafchart.bean.Axis;
+import com.example.indoorapplication.chart.bean.Axis;
 
 /**
  * Created by chenliu on 2016/7/15.<br/>

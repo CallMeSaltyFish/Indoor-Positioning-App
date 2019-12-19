@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.Scroller;
+import androidx.core.view.GestureDetectorCompat;
+import com.example.indoorapplication.R;
 import com.example.indoorapplication.chart.bean.*;
 import com.example.indoorapplication.chart.support.*;
 import com.example.indoorapplication.chart.renderer.*;
