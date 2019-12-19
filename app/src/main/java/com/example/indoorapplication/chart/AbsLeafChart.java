@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 import com.example.indoorapplication.chart.bean.*;
+import com.example.indoorapplication.chart.renderer.*;
 import com.example.indoorapplication.chart.support.*;
 import java.util.List;
 
