@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             scanner = ((DeviceScanner.ScannerBinder)iBinder).getScanner();
             scanner.setScannerListener(new DeviceScanner.ScannerListener() {
                 @Override
-                public void updateRSSI(final int rssi, final int idx) {
+                public void showScanResult(final int rssi, final int idx) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             });
-
-           // rssiTextView.setText(scannerbinder.getRSSI());
         }
 
         @Override
@@ -80,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         rssiTextView=(TextView) findViewById(R.id.device_rssi);
-        rssiTextView.setText("23333");
 
         if (!((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter().isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -92,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        // TODO 自动生成的方法存根
         super.onDestroy();
         unbindService(scannerConn);
     }
@@ -100,10 +96,6 @@ public class MainActivity extends AppCompatActivity {
     private void startScan(){
         Intent startIntent = new Intent(this, DeviceScanner.class);
         bindService(startIntent,scannerConn,BIND_AUTO_CREATE);
-    }
-
-    public TextView getRSSITextView(){
-        return rssiTextView;
     }
 
 }

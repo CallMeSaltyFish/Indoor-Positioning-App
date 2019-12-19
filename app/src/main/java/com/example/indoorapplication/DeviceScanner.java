@@ -17,9 +17,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.ParcelUuid;
-
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.indoorapplication.util.ScanRecordParser;
@@ -34,22 +31,21 @@ public class DeviceScanner extends Service {
     private static final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F"};
     // Stops scanning after given seconds.
     private static final long SCAN_PERIOD = 100000;
+    //private boolean mScanning;
+    private Handler handler;
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothScanner;
-    //private boolean mScanning;
-    private Handler handler;
     private List<ScanFilter> scanFilters;
     private ScanSettings scanSettings;
     private ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            int idx = 0;//getDeviceIndex(result);
+            int idx = getDeviceIndex(result);
             if (idx != -1) {
                 System.out.println("Device: " + idx + " RSSI: " + result.getRssi());
-                scannerListener.updateRSSI(result.getRssi(),idx);
-                //((MainActivity)Con).getRSSITextView().setText("Device: " + idx + " RSSI: " + result.getRssi());
+                scannerListener.showScanResult(result.getRssi(),idx);
             }
         }
     };
@@ -63,7 +59,7 @@ public class DeviceScanner extends Service {
     private ScannerListener scannerListener;
 
     public interface ScannerListener {
-        void updateRSSI(final int rssi, final int idx);
+        void showScanResult(final int rssi, final int idx);
     }
 
     public void setScannerListener(ScannerListener listener) {
