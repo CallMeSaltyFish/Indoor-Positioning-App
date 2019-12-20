@@ -32,7 +32,7 @@ import lecho.lib.hellocharts.view.LineChartView;
 @SuppressLint("NewApi")
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
-    private static MainActivity mainActivity;
+    private static Integer currentRSSI;
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private TextView rssiTextView;
@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            currentRSSI = rssi;
+                            updateChart(rssi);
                             rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
                         }
                     });
@@ -64,14 +66,6 @@ public class MainActivity extends AppCompatActivity {
     private LineChartView chartView;
     List<AxisValue> chartAxisXValues;
     List<PointValue> chartPointValues;
-
-    public MainActivity() {
-        mainActivity = this;
-    }
-
-    public static MainActivity getMainActivity() {
-        return mainActivity;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,15 +113,26 @@ public class MainActivity extends AppCompatActivity {
         chartPointValues = new ArrayList<>();
         for (Integer i = 0; i <= 100; ++i)
             chartAxisXValues.add(new AxisValue(i).setLabel(i.toString()));
-        for (Integer i = 0; i <= 100; ++i)
-            chartPointValues.add(new PointValue(i, rand.nextInt()));
+//        for (Integer i = 0; i <= 100; ++i)
+//            chartPointValues.add(new PointValue(i, rand.nextInt()));
+        createLines();
+        /**注：下面的7，10只是代表一个数字去类比而已
+         * 当时是为了解决X轴固定数据个数。见（http://forum.xda-developers.com/tools/programming/library-hellocharts-charting-library-t2904456/page2）;
+         */
+        Viewport v = new Viewport(chartView.getMaximumViewport());
+        v.left = 0;
+        v.right = 100;
+        chartView.setCurrentViewport(v);
+    }
+
+    private void createLines() {
         Line line = new Line(chartPointValues).setColor(Color.parseColor("#FFCD41"));  //折线的颜色（橙色）
         List<Line> lines = new ArrayList<Line>();
         line.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.DIAMOND）
-        line.setCubic(false);//曲线是否平滑，即是曲线还是折线
+        line.setCubic(true);//曲线是否平滑，即是曲线还是折线
         line.setFilled(false);//是否填充曲线的面积
-        line.setHasLabels(true);//曲线的数据坐标是否加上备注
-//      line.setHasLabelsOnlyForSelected(true);//点击数据坐标提示数据（设置了这个line.setHasLabels(true);就无效）
+        line.setHasLabels(false);//曲线的数据坐标是否加上备注
+        line.setHasLabelsOnlyForSelected(true);//点击数据坐标提示数据（设置了这个line.setHasLabels(true);就无效）
         line.setHasLines(true);//是否用线显示。如果为false 则没有曲线只有点显示
         line.setHasPoints(true);//是否显示圆点 如果为false 则没有原点只有点显示（每个数据点都是个大的圆点）
         lines.add(line);
@@ -153,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
         data.setAxisYLeft(axisY);  //Y轴设置在左边
         //data.setAxisYRight(axisY);  //y轴设置在右边
 
-
         //设置行为属性，支持缩放、滑动以及平移
         chartView.setInteractive(true);
         chartView.setZoomType(ZoomType.HORIZONTAL);
@@ -161,13 +165,13 @@ public class MainActivity extends AppCompatActivity {
         chartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
         chartView.setLineChartData(data);
         chartView.setVisibility(View.VISIBLE);
-        /**注：下面的7，10只是代表一个数字去类比而已
-         * 当时是为了解决X轴固定数据个数。见（http://forum.xda-developers.com/tools/programming/library-hellocharts-charting-library-t2904456/page2）;
-         */
-        Viewport v = new Viewport(chartView.getMaximumViewport());
-        v.left = 0;
-        v.right= 7;
-        chartView.setCurrentViewport(v);
+    }
+
+    private void updateChart(int rssi) {
+        for (PointValue p : chartPointValues)
+            p.set(p.getX() + 1, p.getY());
+        chartPointValues.add(new PointValue(0, rssi));
+        createLines();
     }
 
 }
