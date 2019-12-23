@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.widget.TextView;
+import androidx.fragment.app.Fragment;
+import com.example.indoorapplication.ui.dashboard.DashboardFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +27,8 @@ import lecho.lib.hellocharts.view.LineChartView;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
     private static Integer currentRSSI;
-    private RSSIChart rssiChart;
+    //private RSSIChart rssiChart;
+    private DashboardFragment statFragment;
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private TextView rssiTextView;
@@ -42,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             currentRSSI = rssi;
-                            rssiChart.updateChart(rssi);
+                            updateChart(rssi);
                             rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
                         }
                     });
@@ -70,8 +73,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        rssiChart = new RSSIChart((LineChartView) findViewById(R.id.rssi_line_chart));
+        //findViewById(R.id.)
+        //rssiChart = new RSSIChart((LineChartView) findViewById(R.id.rssi_line_chart));
 
+        statFragment =(DashboardFragment) getSupportFragmentManager().findFragmentById(R.id.nav_dashboard_fragment);
         rssiTextView = (TextView) findViewById(R.id.device_rssi);
 
         if (!((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter().isEnabled()) {
@@ -91,5 +96,9 @@ public class MainActivity extends AppCompatActivity {
     private void startScan() {
         Intent startIntent = new Intent(this, DeviceScanner.class);
         bindService(startIntent, scannerConn, BIND_AUTO_CREATE);
+    }
+
+    public void updateChart(int rssi){
+        statFragment.updateChart(rssi);
     }
 }

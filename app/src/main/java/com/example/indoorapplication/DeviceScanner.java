@@ -50,7 +50,7 @@ public class DeviceScanner extends Service {
         }
     };
 
-    class ScannerBinder extends Binder {
+    public class ScannerBinder extends Binder {
         public DeviceScanner getScanner() {
             return DeviceScanner.this;
         }
