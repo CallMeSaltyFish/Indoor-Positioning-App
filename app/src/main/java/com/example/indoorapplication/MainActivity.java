@@ -4,14 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.widget.TextView;
-import androidx.fragment.app.Fragment;
 import com.example.indoorapplication.ui.dashboard.DashboardFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.RequiresApi;
@@ -20,8 +16,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.RecyclerView;
-import lecho.lib.hellocharts.view.LineChartView;
 
 @SuppressLint("NewApi")
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -32,32 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private TextView rssiTextView;
-    private RecyclerView deviceView;
-    private DeviceScanner scanner;
-    private ServiceConnection scannerConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            scanner = ((DeviceScanner.ScannerBinder) iBinder).getScanner();
-            scanner.setScannerListener(new DeviceScanner.ScannerListener() {
-                @Override
-                public void showScanResult(final int rssi, final int idx) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            currentRSSI = rssi;
-                            updateChart(rssi);
-                            rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
-                        }
-                    });
-                }
-            });
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +41,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        //findViewById(R.id.)
-        //rssiChart = new RSSIChart((LineChartView) findViewById(R.id.rssi_line_chart));
-
-        statFragment =(DashboardFragment) getSupportFragmentManager().findFragmentById(R.id.nav_dashboard_fragment);
+        //statFragment =(DashboardFragment) getSupportFragmentManager().f
         rssiTextView = (TextView) findViewById(R.id.device_rssi);
 
         if (!((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter().isEnabled()) {
@@ -84,21 +49,7 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(enableBtIntent, Activity.RESULT_OK);
         }
 
-        startScan();
+        //startScan();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbindService(scannerConn);
-    }
-
-    private void startScan() {
-        Intent startIntent = new Intent(this, DeviceScanner.class);
-        bindService(startIntent, scannerConn, BIND_AUTO_CREATE);
-    }
-
-    public void updateChart(int rssi){
-        statFragment.updateChart(rssi);
-    }
 }

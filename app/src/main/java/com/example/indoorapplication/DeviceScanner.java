@@ -45,7 +45,7 @@ public class DeviceScanner extends Service {
             int idx = getDeviceIndex(result);
             if (idx != -1) {
                 System.out.println("Device: " + idx + " RSSI: " + result.getRssi());
-                scannerListener.showScanResult(result.getRssi(),idx);
+                scannerListener.showScanResult(result.getRssi(), idx);
             }
         }
     };
@@ -86,7 +86,6 @@ public class DeviceScanner extends Service {
 //            scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
         scanLeDevice(true);
     }
-
 
     private void scanLeDevice(final boolean enable) {
         if (enable) {
