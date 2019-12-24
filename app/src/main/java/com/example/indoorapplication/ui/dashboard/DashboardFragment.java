@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
@@ -25,7 +26,10 @@ import static android.content.Context.BIND_AUTO_CREATE;
 public class DashboardFragment extends Fragment {
 
     private boolean isActive;
+    private boolean isScanning;
     private DashboardViewModel dashboardViewModel;
+    private Button startScanButton;
+    private Button stopScanButton;
     private RSSIChart rssiChart;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
@@ -59,8 +63,27 @@ public class DashboardFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         isActive = false;
+        isScanning =false;
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        startScanButton=root.findViewById(R.id.start_scan_button);
+        startScanButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(!isScanning){
+                    startScan();
+                    isScanning=true;
+                }
+            }
+        });
+        stopScanButton=root.findViewById(R.id.stop_scan_button);
+        stopScanButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                    stopScan();
+                    isScanning=false;
+            }
+        });
         rssiChart = new RSSIChart((LineChartView) root.findViewById(R.id.rssi_line_chart));
         return root;
     }
@@ -93,7 +116,6 @@ public class DashboardFragment extends Fragment {
     public void onResume() {
         super.onResume();
         isActive = true;
-        startScan();
     }
 
     private void updateChart(int rssi) {

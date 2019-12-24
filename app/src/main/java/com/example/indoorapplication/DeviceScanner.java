@@ -68,7 +68,14 @@ public class DeviceScanner extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        scanLeDevice(true);
         return new ScannerBinder();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        bluetoothScanner.stopScan(scanCallback);
+        return true;
     }
 
     @Override
@@ -84,7 +91,6 @@ public class DeviceScanner extends Service {
 //            scanFilters.add(new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(uuid))).build());
 //        for (String addr : DEVICE_ADDRS)
 //            scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
-        scanLeDevice(true);
     }
 
     private void scanLeDevice(final boolean enable) {
@@ -94,7 +100,7 @@ public class DeviceScanner extends Service {
                 @SuppressLint("NewApi")
                 @Override
                 public void run() {
-                    // mScanning = false;
+                    //mScanning = false;
                     bluetoothScanner.startScan(scanCallback);
                 }
             }, SCAN_PERIOD);
@@ -102,7 +108,7 @@ public class DeviceScanner extends Service {
             //mScanning = true;
             bluetoothScanner.startScan(scanCallback);
         } else {
-            // mScanning = false;
+            //mScanning = false;
             bluetoothScanner.stopScan(scanCallback);
         }
     }
