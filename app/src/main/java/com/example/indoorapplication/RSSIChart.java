@@ -5,14 +5,16 @@ import android.view.View;
 import lecho.lib.hellocharts.gesture.*;
 import lecho.lib.hellocharts.model.*;
 import lecho.lib.hellocharts.view.*;
+
 import java.util.*;
 
 public class RSSIChart {
     private List<AxisValue> chartAxisXValues;
     private List<PointValue> chartPointValues;
     private LineChartView chartView;
+
     public RSSIChart(LineChartView lineChartView) {
-        chartView=lineChartView;
+        chartView = lineChartView;
         chartAxisXValues = new ArrayList<>();
         chartPointValues = new ArrayList<>();
         for (Integer i = 0; i <= 100; ++i)
@@ -76,6 +78,11 @@ public class RSSIChart {
             p.set(p.getX() + 1, p.getY());
         chartPointValues.add(new PointValue(0, rssi));
         createLines();
+    }
+
+    public void eraseChart() {
+        chartView.setLineChartData(null);
+        chartView.setVisibility(View.INVISIBLE);
     }
 
 }
