@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.indoorapplication.DeviceScanner;
 import com.example.indoorapplication.R;
 import com.example.indoorapplication.RSSIChart;
+import com.example.indoorapplication.util.Database;
 import lecho.lib.hellocharts.view.LineChartView;
 
 import java.util.ArrayList;
@@ -87,8 +88,10 @@ public class DashboardFragment extends Fragment {
         stopScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopScan();
-                isScanning = false;
+                if (isScanning) {
+                    stopScan();
+                    isScanning = false;
+                }
             }
         });
         rssiChart = new RSSIChart((LineChartView) root.findViewById(R.id.rssi_line_chart));
