@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import androidx.annotation.RequiresApi;
 
+import com.example.indoorapplication.util.Database;
 import com.example.indoorapplication.util.ScanRecordParser;
 
 import java.util.*;
@@ -32,6 +33,7 @@ public class DeviceScanner extends Service {
     // Stops scanning after given seconds.
     private static final long SCAN_PERIOD = 100000;
     //private boolean mScanning;
+    private Database database;
     private Handler handler;
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
@@ -45,7 +47,7 @@ public class DeviceScanner extends Service {
             int idx = getDeviceIndex(result);
             if (idx != -1) {
                 System.out.println("Device: " + idx + " RSSI: " + result.getRssi());
-                scannerListener.showScanResult(result.getRssi(), idx);
+                scannerListener.updateScanResult(result.getRssi(), idx);
             }
         }
     };
@@ -59,7 +61,7 @@ public class DeviceScanner extends Service {
     private ScannerListener scannerListener;
 
     public interface ScannerListener {
-        void showScanResult(final int rssi, final int idx);
+        void updateScanResult(final int rssi, final int idx);
     }
 
     public void setScannerListener(ScannerListener listener) {
@@ -75,6 +77,7 @@ public class DeviceScanner extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         bluetoothScanner.stopScan(scanCallback);
+        System.out.println(database.get());
         return true;
     }
 
@@ -87,6 +90,7 @@ public class DeviceScanner extends Service {
         handler = new Handler();
         scanSettings = new ScanSettings.Builder().build();
         scanFilters = new ArrayList<>();
+        database = new Database(getApplicationContext());
 //        for (String uuid : DEVICE_UUIDS)
 //            scanFilters.add(new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(uuid))).build());
 //        for (String addr : DEVICE_ADDRS)
@@ -116,6 +120,10 @@ public class DeviceScanner extends Service {
     private int getDeviceIndex(ScanResult result) {
         String uuid = ScanRecordParser.parseUUID(result.getScanRecord().getBytes());
         return Arrays.asList(DEVICE_UUIDS).indexOf(uuid);
+    }
+
+    public Database getDatabase(){
+        return database;
     }
 
 }

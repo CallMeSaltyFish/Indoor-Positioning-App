@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
@@ -19,6 +21,8 @@ import com.example.indoorapplication.DeviceScanner;
 import com.example.indoorapplication.R;
 import com.example.indoorapplication.RSSIChart;
 import lecho.lib.hellocharts.view.LineChartView;
+
+import java.util.ArrayList;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -31,6 +35,7 @@ public class DashboardFragment extends Fragment {
     private Button startScanButton;
     private Button stopScanButton;
     private RSSIChart rssiChart;
+    private EditText distanceEditText;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
         @Override
@@ -38,14 +43,17 @@ public class DashboardFragment extends Fragment {
             scanner = ((DeviceScanner.ScannerBinder) iBinder).getScanner();
             scanner.setScannerListener(new DeviceScanner.ScannerListener() {
                 @Override
-                public void showScanResult(final int rssi, final int idx) {
+                public void updateScanResult(final int rssi, final int idx) {
                     if (getActivity() == null || !isActive)
                         return;
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //currentRSSI = rssi;
+                            Integer distance = Integer.parseInt(distanceEditText.getText().toString());
+                            System.out.println("=================================================="+distance);
+                            scanner.getDatabase().add(distance, rssi);
                             updateChart(rssi);
+                            addRSSI(rssi);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
                         }
                     });
@@ -59,29 +67,35 @@ public class DashboardFragment extends Fragment {
         }
     };
 
+    private ArrayList<Integer> rssiList;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        rssiList = new ArrayList<>();
         isActive = false;
-        isScanning =false;
+        isScanning = false;
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        startScanButton=root.findViewById(R.id.start_scan_button);
-        startScanButton.setOnClickListener(new View.OnClickListener(){
+        distanceEditText = root.findViewById(R.id.distance_edit_text);
+        startScanButton = root.findViewById(R.id.start_scan_button);
+        startScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isScanning){
+                if (!isScanning) {
                     startScan();
-                    isScanning=true;
+                    isScanning = true;
                 }
             }
         });
-        stopScanButton=root.findViewById(R.id.stop_scan_button);
-        stopScanButton.setOnClickListener(new View.OnClickListener(){
+        stopScanButton = root.findViewById(R.id.stop_scan_button);
+        stopScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isScanning) {
                     stopScan();
-                    isScanning=false;
+                    isScanning = false;
+                }
             }
         });
         rssiChart = new RSSIChart((LineChartView) root.findViewById(R.id.rssi_line_chart));
@@ -122,6 +136,19 @@ public class DashboardFragment extends Fragment {
         rssiChart.updateChart(rssi);
     }
 
+    private void addRSSI(int rssi) {
+        rssiList.add(rssi);
+    }
+
+    private void updateAverageRSSI() {
+        int sumRSSi = 0;
+        for (int rssi : rssiList)
+            sumRSSi += rssi;
+        int averageRSSI = sumRSSi / rssiList.size();
+        ((TextView) getView().findViewById(R.id.device_rssi)).setText("Average: " + averageRSSI);
+        rssiList.clear();
+    }
+
     private void startScan() {
         Intent startIntent = new Intent(getActivity(), DeviceScanner.class);
         getActivity().bindService(startIntent, scannerConn, BIND_AUTO_CREATE);
@@ -129,5 +156,6 @@ public class DashboardFragment extends Fragment {
 
     private void stopScan() {
         getActivity().unbindService(scannerConn);
+        updateAverageRSSI();
     }
 }
