@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -19,7 +20,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.indoorapplication.DeviceScanner;
 import com.example.indoorapplication.R;
 import com.example.indoorapplication.RSSIChart;
-import com.example.indoorapplication.util.Database;
 import lecho.lib.hellocharts.view.LineChartView;
 
 import java.util.ArrayList;
@@ -35,6 +35,7 @@ public class DashboardFragment extends Fragment {
     private Button startScanButton;
     private Button stopScanButton;
     private RSSIChart rssiChart;
+    private EditText distanceEditText;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
         @Override
@@ -42,13 +43,15 @@ public class DashboardFragment extends Fragment {
             scanner = ((DeviceScanner.ScannerBinder) iBinder).getScanner();
             scanner.setScannerListener(new DeviceScanner.ScannerListener() {
                 @Override
-                public void showScanResult(final int rssi, final int idx) {
+                public void updateScanResult(final int rssi, final int idx) {
                     if (getActivity() == null || !isActive)
                         return;
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //currentRSSI = rssi;
+                            Integer distance = Integer.parseInt(distanceEditText.getText().toString());
+                            System.out.println("=================================================="+distance);
+                            scanner.getDatabase().add(distance, rssi);
                             updateChart(rssi);
                             addRSSI(rssi);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
@@ -74,6 +77,7 @@ public class DashboardFragment extends Fragment {
         isScanning = false;
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        distanceEditText = root.findViewById(R.id.distance_edit_text);
         startScanButton = root.findViewById(R.id.start_scan_button);
         startScanButton.setOnClickListener(new View.OnClickListener() {
             @Override

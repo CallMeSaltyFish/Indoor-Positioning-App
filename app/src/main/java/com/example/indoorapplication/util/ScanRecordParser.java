@@ -1,8 +1,5 @@
 package com.example.indoorapplication.util;
 
-import android.bluetooth.le.ScanResult;
-import android.os.Build;
-
 import java.util.*;
 
 public class ScanRecordParser {

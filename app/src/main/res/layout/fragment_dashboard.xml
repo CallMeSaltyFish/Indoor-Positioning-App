@@ -55,4 +55,20 @@
             app:layout_constraintTop_toBottomOf="@+id/rssi_line_chart"
             app:layout_constraintVertical_bias="0.0" />
 
+    <EditText
+            android:id="@+id/distance_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center|center_horizontal"
+            android:inputType="number"
+            android:text="@string/rssi_textview_default"
+            android:textSize="36sp"
+            app:fontFamily="sans-serif-thin"
+            app:layout_constraintBottom_toTopOf="@+id/rssi_line_chart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

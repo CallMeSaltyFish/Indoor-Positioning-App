@@ -47,8 +47,7 @@ public class DeviceScanner extends Service {
             int idx = getDeviceIndex(result);
             if (idx != -1) {
                 System.out.println("Device: " + idx + " RSSI: " + result.getRssi());
-                database.add(0,result.getRssi());
-                scannerListener.showScanResult(result.getRssi(), idx);
+                scannerListener.updateScanResult(result.getRssi(), idx);
             }
         }
     };
@@ -62,7 +61,7 @@ public class DeviceScanner extends Service {
     private ScannerListener scannerListener;
 
     public interface ScannerListener {
-        void showScanResult(final int rssi, final int idx);
+        void updateScanResult(final int rssi, final int idx);
     }
 
     public void setScannerListener(ScannerListener listener) {
@@ -121,6 +120,10 @@ public class DeviceScanner extends Service {
     private int getDeviceIndex(ScanResult result) {
         String uuid = ScanRecordParser.parseUUID(result.getScanRecord().getBytes());
         return Arrays.asList(DEVICE_UUIDS).indexOf(uuid);
+    }
+
+    public Database getDatabase(){
+        return database;
     }
 
 }
