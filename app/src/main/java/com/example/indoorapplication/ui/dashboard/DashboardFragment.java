@@ -51,7 +51,7 @@ public class DashboardFragment extends Fragment {
                         public void run() {
                             Integer distance = Integer.parseInt(distanceEditText.getText().toString());
                             scanner.getDatabase().add(distance, rssi);
-                            updateChart(rssi);
+                            updateChart(rssi, idx);
                             addRSSI(rssi);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
                         }
@@ -131,8 +131,8 @@ public class DashboardFragment extends Fragment {
         isActive = true;
     }
 
-    private void updateChart(int rssi) {
-        rssiChart.updateChart(rssi);
+    private void updateChart(int rssi, int idx) {
+        rssiChart.updateChart(rssi, idx);
     }
 
     private void addRSSI(int rssi) {
