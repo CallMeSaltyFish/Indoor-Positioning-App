@@ -50,7 +50,6 @@ public class DashboardFragment extends Fragment {
                         @Override
                         public void run() {
                             Integer distance = Integer.parseInt(distanceEditText.getText().toString());
-                            System.out.println("=================================================="+distance);
                             scanner.getDatabase().add(distance, rssi);
                             updateChart(rssi);
                             addRSSI(rssi);
