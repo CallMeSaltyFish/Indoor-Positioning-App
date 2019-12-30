@@ -29,7 +29,7 @@ import java.util.*;
 public class DeviceScanner extends Service {
 
     private static final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
-    private static final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F"};
+    private static final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61"};
     // Stops scanning after given seconds.
     private static final long SCAN_PERIOD = 100000;
     //private boolean mScanning;
@@ -93,8 +93,8 @@ public class DeviceScanner extends Service {
         database = new Database(getApplicationContext());
 //        for (String uuid : DEVICE_UUIDS)
 //            scanFilters.add(new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(uuid))).build());
-//        for (String addr : DEVICE_ADDRS)
-//            scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
+        for (String addr : DEVICE_ADDRS)
+            scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
     }
 
     private void scanLeDevice(final boolean enable) {
@@ -105,7 +105,7 @@ public class DeviceScanner extends Service {
                 @Override
                 public void run() {
                     //mScanning = false;
-                    bluetoothScanner.startScan(scanCallback);
+                    bluetoothScanner.startScan(scanFilters,scanSettings,scanCallback);
                 }
             }, SCAN_PERIOD);
 
@@ -118,8 +118,10 @@ public class DeviceScanner extends Service {
     }
 
     private int getDeviceIndex(ScanResult result) {
-        String uuid = ScanRecordParser.parseUUID(result.getScanRecord().getBytes());
-        return Arrays.asList(DEVICE_UUIDS).indexOf(uuid);
+        //String uuid = ScanRecordParser.parseUUID(result.getScanRecord().getBytes());
+        //return Arrays.asList(DEVICE_UUIDS).indexOf(uuid);
+        String addr = result.getDevice().getAddress();
+        return Arrays.asList(DEVICE_ADDRS).indexOf(addr);
     }
 
     public Database getDatabase(){

@@ -9,14 +9,20 @@ import lecho.lib.hellocharts.view.*;
 import java.util.*;
 
 public class RSSIChart {
+    private static final int DEVICES = 3;
+    private static final String[] COLORS = {"#FFCD41", "#34CC20", "#18B2C6"};
+    private List<Line> lines;
     private List<AxisValue> chartAxisXValues;
-    private List<PointValue> chartPointValues;
+    private List<List<PointValue>> chartPointValues;
     private LineChartView chartView;
 
     public RSSIChart(LineChartView lineChartView) {
+        lines = new ArrayList<>(DEVICES);
         chartView = lineChartView;
         chartAxisXValues = new ArrayList<>();
-        chartPointValues = new ArrayList<>();
+        chartPointValues = new ArrayList<>(DEVICES);
+        for (int i = 0; i < DEVICES; ++i)
+            chartPointValues.add(new ArrayList<PointValue>());
         for (Integer i = 0; i <= 100; ++i)
             chartAxisXValues.add(new AxisValue(i).setLabel(i.toString()));
 //        for (Integer i = 0; i <= 100; ++i)
@@ -32,8 +38,12 @@ public class RSSIChart {
     }
 
     private void createLines() {
-        Line line = new Line(chartPointValues).setColor(Color.parseColor("#FFCD41"));  //折线的颜色（橙色）
-        List<Line> lines = new ArrayList<>();
+        for (int i = 0; i < DEVICES; ++i)
+            createLines(i);
+    }
+
+    private void createLines(int idx) {
+        Line line = new Line(chartPointValues.get(idx)).setColor(Color.parseColor(COLORS[idx]));  //折线的颜色（橙色）
         line.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.DIAMOND）
         line.setCubic(true);//曲线是否平滑，即是曲线还是折线
         line.setFilled(false);//是否填充曲线的面积
@@ -73,11 +83,12 @@ public class RSSIChart {
         chartView.setVisibility(View.VISIBLE);
     }
 
-    public void updateChart(int rssi) {
-        for (PointValue p : chartPointValues)
+    public void updateChart(int rssi, int idx) {
+        List<PointValue> pointList = chartPointValues.get(idx);
+        for (PointValue p : pointList)
             p.set(p.getX() + 1, p.getY());
-        chartPointValues.add(new PointValue(0, rssi));
-        createLines();
+        pointList.add(new PointValue(0, rssi));
+        createLines(idx);
     }
 
     public void eraseChart() {
