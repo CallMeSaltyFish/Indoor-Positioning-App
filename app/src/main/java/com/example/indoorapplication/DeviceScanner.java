@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import androidx.annotation.RequiresApi;
 
+import com.example.indoorapplication.util.Database;
 import com.example.indoorapplication.util.ScanRecordParser;
 
 import java.util.*;
@@ -32,6 +33,7 @@ public class DeviceScanner extends Service {
     // Stops scanning after given seconds.
     private static final long SCAN_PERIOD = 100000;
     //private boolean mScanning;
+    private Database database;
     private Handler handler;
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
@@ -45,12 +47,12 @@ public class DeviceScanner extends Service {
             int idx = getDeviceIndex(result);
             if (idx != -1) {
                 System.out.println("Device: " + idx + " RSSI: " + result.getRssi());
-                scannerListener.showScanResult(result.getRssi(),idx);
+                scannerListener.updateScanResult(result.getRssi(), idx);
             }
         }
     };
 
-    class ScannerBinder extends Binder {
+    public class ScannerBinder extends Binder {
         public DeviceScanner getScanner() {
             return DeviceScanner.this;
         }
@@ -59,7 +61,7 @@ public class DeviceScanner extends Service {
     private ScannerListener scannerListener;
 
     public interface ScannerListener {
-        void showScanResult(final int rssi, final int idx);
+        void updateScanResult(final int rssi, final int idx);
     }
 
     public void setScannerListener(ScannerListener listener) {
@@ -68,7 +70,15 @@ public class DeviceScanner extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        scanLeDevice(true);
         return new ScannerBinder();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        bluetoothScanner.stopScan(scanCallback);
+        System.out.println(database.get());
+        return true;
     }
 
     @Override
@@ -80,13 +90,12 @@ public class DeviceScanner extends Service {
         handler = new Handler();
         scanSettings = new ScanSettings.Builder().build();
         scanFilters = new ArrayList<>();
+        database = new Database(getApplicationContext());
 //        for (String uuid : DEVICE_UUIDS)
 //            scanFilters.add(new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(uuid))).build());
-        for (String addr : DEVICE_ADDRS)
-            scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
-        scanLeDevice(true);
+//        for (String addr : DEVICE_ADDRS)
+//            scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
     }
-
 
     private void scanLeDevice(final boolean enable) {
         if (enable) {
@@ -95,15 +104,15 @@ public class DeviceScanner extends Service {
                 @SuppressLint("NewApi")
                 @Override
                 public void run() {
-                    // mScanning = false;
-                    bluetoothScanner.startScan(scanFilters,scanSettings,scanCallback);
+                    //mScanning = false;
+                    bluetoothScanner.startScan(scanCallback);
                 }
             }, SCAN_PERIOD);
 
             //mScanning = true;
             bluetoothScanner.startScan(scanFilters,scanSettings,scanCallback);
         } else {
-            // mScanning = false;
+            //mScanning = false;
             bluetoothScanner.stopScan(scanCallback);
         }
     }
@@ -111,6 +120,10 @@ public class DeviceScanner extends Service {
     private int getDeviceIndex(ScanResult result) {
         String uuid = ScanRecordParser.parseUUID(result.getScanRecord().getBytes());
         return Arrays.asList(DEVICE_UUIDS).indexOf(uuid);
+    }
+
+    public Database getDatabase(){
+        return database;
     }
 
 }
