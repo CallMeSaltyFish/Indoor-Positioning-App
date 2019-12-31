@@ -57,18 +57,28 @@
 
     <EditText
             android:id="@+id/distance_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="167dp"
+            android:layout_height="51dp"
             android:gravity="center|center_horizontal"
             android:inputType="number"
-            android:text="@string/rssi_textview_default"
-            android:textSize="36sp"
+            android:textSize="30sp"
             app:fontFamily="sans-serif-thin"
             app:layout_constraintBottom_toTopOf="@+id/rssi_line_chart"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.696"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+            android:id="@+id/distance_text_view"
+            android:layout_width="89dp"
+            android:layout_height="39dp"
+            android:text="@string/distance"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/rssi_line_chart"
+            app:layout_constraintEnd_toStartOf="@+id/distance_edit_text"
+            app:layout_constraintHorizontal_bias="0.742"
+            app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
