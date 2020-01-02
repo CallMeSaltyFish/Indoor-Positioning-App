@@ -22,7 +22,7 @@ import com.example.indoorapplication.R;
 import com.example.indoorapplication.RSSIChart;
 import lecho.lib.hellocharts.view.LineChartView;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -35,7 +35,8 @@ public class DashboardFragment extends Fragment {
     private Button startScanButton;
     private Button stopScanButton;
     private RSSIChart rssiChart;
-    private EditText distanceEditText;
+    private List<EditText> distanceEditTexts;
+    private List<List<Integer>> rssiLists;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
         @Override
@@ -49,10 +50,10 @@ public class DashboardFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Integer distance = Integer.parseInt(distanceEditText.getText().toString());
-                            scanner.getDatabase().add(distance, rssi);
+                            //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
+                            //scanner.getDatabase().add(distance, rssi);
                             updateChart(rssi, idx);
-                            addRSSI(rssi);
+                            addRSSI(rssi, idx);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
                         }
                     });
@@ -66,17 +67,19 @@ public class DashboardFragment extends Fragment {
         }
     };
 
-    private ArrayList<Integer> rssiList;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        rssiList = new ArrayList<>();
+        rssiLists = new ArrayList<>(3);
+        for (int i = 0; i < 3; ++i)
+            rssiLists.add(new ArrayList<Integer>());
         isActive = false;
         isScanning = false;
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        distanceEditText = root.findViewById(R.id.distance_edit_text);
+        distanceEditTexts = new ArrayList<>(3);
+        for (int i = 0; i < 3; ++i)
+            distanceEditTexts.add((EditText) root.findViewById(getResources().getIdentifier("distance_edit_text_" + i, "id", getContext().getPackageName())));
         startScanButton = root.findViewById(R.id.start_scan_button);
         startScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,17 +138,24 @@ public class DashboardFragment extends Fragment {
         rssiChart.updateChart(rssi, idx);
     }
 
-    private void addRSSI(int rssi) {
-        rssiList.add(rssi);
+    private void addRSSI(int rssi, int idx) {
+        rssiLists.get(idx).add(rssi);
     }
 
     private void updateAverageRSSI() {
-        int sumRSSi = 0;
-        for (int rssi : rssiList)
-            sumRSSi += rssi;
-        int averageRSSI = sumRSSi / rssiList.size();
-        ((TextView) getView().findViewById(R.id.device_rssi)).setText("Average: " + averageRSSI);
-        rssiList.clear();
+        for (int i = 0; i < 3; ++i) {
+            List<Integer> rssiList = rssiLists.get(i);
+            if (rssiList.size() == 0)
+                continue;
+            int sumRSSi = 0;
+            for (int rssi : rssiList)
+                sumRSSi += rssi;
+            int averageRSSI = sumRSSi / rssiList.size();
+            int distance = Integer.parseInt(distanceEditTexts.get(i).getText().toString());
+            scanner.getDatabase().add(distance, averageRSSI);
+            //((TextView) getView().findViewById(R.id.device_rssi)).setText("Average: " + averageRSSI);
+            rssiList.clear();
+        }
     }
 
     private void startScan() {
