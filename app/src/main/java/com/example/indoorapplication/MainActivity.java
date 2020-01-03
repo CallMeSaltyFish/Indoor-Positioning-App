@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         //statFragment =(DashboardFragment) getSupportFragmentManager().f
-        rssiTextView = (TextView) findViewById(R.id.device_rssi);
+        //rssiTextView = (TextView) findViewById(R.id.device_rssi);
 
         if (!((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter().isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
