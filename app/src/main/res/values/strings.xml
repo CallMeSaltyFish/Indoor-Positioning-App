@@ -10,4 +10,5 @@
     <string name="device_0">设备1：</string>
     <string name="device_1">设备2：</string>
     <string name="device_2">设备3：</string>
+    <string name="data_processing">处理数据</string>
 </resources>
