@@ -4,11 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.TextView;
-import com.example.indoorapplication.ui.dashboard.DashboardFragment;
+import android.view.Menu;
+import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,12 +21,6 @@ import androidx.navigation.ui.NavigationUI;
 @SuppressLint("NewApi")
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
-    private static Integer currentRSSI;
-    //private RSSIChart rssiChart;
-    private DashboardFragment statFragment;
-    private BluetoothManager bluetoothManager;
-    private BluetoothAdapter bluetoothAdapter;
-    private TextView rssiTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +44,30 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(enableBtIntent, Activity.RESULT_OK);
         }
 
+
         //startScan();
+    }
+
+    //这里是在登录界面label上右上角添加三个点，里面可添加其他功能
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);//这里是调用menu文件夹中的main.xml，在登陆界面label右上角的三角里显示其他功能
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                break;
+            default:
+                break;
+        }
+
+        return true;
     }
 
 }
