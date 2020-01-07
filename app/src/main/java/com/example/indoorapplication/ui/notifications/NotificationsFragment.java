@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -20,8 +21,9 @@ import java.util.*;
 public class NotificationsFragment extends Fragment {
 
     private NotificationsViewModel notificationsViewModel;
+    private Button dataProcessingButton;
     private DataChart dataChart;
-    //private List<PointValue> pointValues;
+    private List<PointValue> pointValues;
     private LineChartView chartView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -32,6 +34,13 @@ public class NotificationsFragment extends Fragment {
         chartView = root.findViewById(R.id.data_line_chart);
         dataChart = new DataChart(chartView);
         updatePointValue();
+        dataProcessingButton = root.findViewById(R.id.data_processing_button);
+        dataProcessingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                processData();
+            }
+        });
         return root;
     }
 
@@ -42,7 +51,7 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void updatePointValue() {
-        List<PointValue> pointValues = new ArrayList<>();
+        pointValues = new ArrayList<>();
         HashMap<Integer, ArrayList<Integer>> map = new Database(getContext()).get();
         for (Map.Entry entry : map.entrySet()) {
             int distance = (int) entry.getKey();
@@ -51,5 +60,9 @@ public class NotificationsFragment extends Fragment {
                 pointValues.add(new PointValue(rssi, distance));
         }
         dataChart.updateChart(pointValues);
+    }
+
+    private void processData() {
+        System.out.println("process data");
     }
 }
