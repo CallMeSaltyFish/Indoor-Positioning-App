@@ -18,9 +18,16 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import java.util.*;
+
 @SuppressLint("NewApi")
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
+    private static final String[] DEFAULT_DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61", "C4:CE:DA:A2:25:62"};
+    private static final double[][] DEFAULT_DEVICE_POSITIONS = {{0, 0}, {1, 0}, {0, 1}};
+
+    private static String[] deviceAddrs;
+    private static double[][] devicePositions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+
+        deviceAddrs = Arrays.copyOf(DEFAULT_DEVICE_ADDRS, DEFAULT_DEVICE_ADDRS.length);
+        devicePositions = Arrays.copyOf(DEFAULT_DEVICE_POSITIONS, DEFAULT_DEVICE_POSITIONS.length);
 
         //statFragment =(DashboardFragment) getSupportFragmentManager().f
         //rssiTextView = (TextView) findViewById(R.id.device_rssi);
@@ -68,6 +78,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    public static void setDeviceAddr(int idx, String addr) {
+        deviceAddrs[idx] = addr;
+    }
+
+    public static void setDevicePosition(int idx, double x, double y) {
+        devicePositions[idx] = new double[]{x, y};
+    }
+
+    public static String getDeviceAddr(int idx) {
+        return deviceAddrs[idx];
+    }
+
+    public static double[] getDevicePosition(int idx) {
+        return devicePositions[idx];
+    }
+
+    public static String getDevicePositionString(int idx) {
+        return "X: " + devicePositions[idx][0] + " Y: " + devicePositions[idx][1];
     }
 
 }

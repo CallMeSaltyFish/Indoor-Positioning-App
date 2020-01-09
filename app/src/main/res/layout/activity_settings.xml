@@ -16,14 +16,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.754" />
+            app:layout_constraintTop_toBottomOf="@+id/device_view"
+            app:layout_constraintVertical_bias="0.436" />
 
     <ListView
-            android:id="@+id/device_addr_view"
-            android:layout_width="409dp"
-            android:layout_height="368dp"
-            app:layout_constraintBottom_toTopOf="@+id/confirm_settings_button"
+            android:id="@+id/device_view"
+            android:layout_width="412dp"
+            android:layout_height="352dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
