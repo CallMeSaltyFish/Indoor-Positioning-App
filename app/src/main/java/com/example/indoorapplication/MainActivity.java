@@ -24,10 +24,10 @@ import java.util.*;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
     private static final String[] DEFAULT_DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61", "C4:CE:DA:A2:25:62"};
-    private static final double[][] DEFAULT_DEVICE_POSITIONS = {{0, 0}, {1, 0}, {0, 1}};
+    private static final Double[][] DEFAULT_DEVICE_POSITIONS = {{0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}};
 
     private static String[] deviceAddrs;
-    private static double[][] devicePositions;
+    private static Double[][] devicePositions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void setDevicePosition(int idx, double x, double y) {
-        devicePositions[idx] = new double[]{x, y};
+        devicePositions[idx] = new Double[]{x, y};
     }
 
     public static String[] getDeviceAddrs(){
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         return deviceAddrs[idx];
     }
 
-    public static double[] getDevicePosition(int idx) {
+    public static Double[] getDevicePosition(int idx) {
         return devicePositions[idx];
     }
 

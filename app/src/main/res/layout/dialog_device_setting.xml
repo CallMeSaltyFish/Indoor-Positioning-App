@@ -4,14 +4,10 @@
         android:orientation="vertical">
 
     <TextView
-            android:id="@+id/dialog_device_setting_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    <TextView
             android:id="@+id/dialog_device_setting_addr"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/device_addr" />
 
     <EditText
             android:id="@+id/dialog_device_setting_addr_edit_text"
@@ -19,13 +15,27 @@
             android:layout_height="wrap_content" />
 
     <TextView
-            android:id="@+id/dialog_device_setting_position"
+            android:id="@+id/dialog_device_setting_position_x"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/device_position_x" />
 
     <EditText
-            android:id="@+id/dialog_device_setting_position_edit_text"
+            android:id="@+id/dialog_device_setting_position_x_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+    <TextView
+            android:id="@+id/dialog_device_setting_position_y"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/device_position_y" />
+
+    <EditText
+            android:id="@+id/dialog_device_setting_position_y_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
 
 </LinearLayout>

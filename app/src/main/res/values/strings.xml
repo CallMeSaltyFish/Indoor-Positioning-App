@@ -15,5 +15,7 @@
     <string name="settings">设置</string>
     <string name="device_addr">MAC地址</string>
     <string name="device_position">坐标</string>
+    <string name="device_position_x">X坐标</string>
+    <string name="device_position_y">Y坐标</string>
     <string name="confirm_settings">确定</string>
 </resources>
