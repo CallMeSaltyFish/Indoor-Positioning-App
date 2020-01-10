@@ -88,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
         devicePositions[idx] = new double[]{x, y};
     }
 
+    public static String[] getDeviceAddrs(){
+        return deviceAddrs;
+    }
+
     public static String getDeviceAddr(int idx) {
         return deviceAddrs[idx];
     }

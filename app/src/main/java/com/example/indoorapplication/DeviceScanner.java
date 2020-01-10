@@ -28,8 +28,8 @@ import java.util.*;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DeviceScanner extends Service {
 
-    private static final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
-    private static final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61"};
+//    private static final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
+//    private static final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61"};
     // Stops scanning after given seconds.
     private static final long SCAN_PERIOD = 100000;
     //private boolean mScanning;
@@ -93,7 +93,7 @@ public class DeviceScanner extends Service {
         database = new Database(getApplicationContext());
 //        for (String uuid : DEVICE_UUIDS)
 //            scanFilters.add(new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(uuid))).build());
-        for (String addr : DEVICE_ADDRS)
+        for (String addr : MainActivity.getDeviceAddrs())
             scanFilters.add(new ScanFilter.Builder().setDeviceAddress(addr).build());
     }
 
@@ -121,7 +121,7 @@ public class DeviceScanner extends Service {
         //String uuid = ScanRecordParser.parseUUID(result.getScanRecord().getBytes());
         //return Arrays.asList(DEVICE_UUIDS).indexOf(uuid);
         String addr = result.getDevice().getAddress();
-        return Arrays.asList(DEVICE_ADDRS).indexOf(addr);
+        return Arrays.asList(MainActivity.getDeviceAddrs()).indexOf(addr);
     }
 
     public Database getDatabase(){
