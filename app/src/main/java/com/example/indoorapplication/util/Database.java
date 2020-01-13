@@ -52,15 +52,29 @@ public class Database {
         //database.execSQL("INSERT INTO " + RSSI_TABLE_NAME + " (distance, RSSI) VALUES (" + distance + ", " + rssi + ");");
     }
 
-    public HashMap<Integer, ArrayList<Integer>> get() {
-        HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
+//    public HashMap<Integer, ArrayList<Integer>> get() {
+//        HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
+//        Cursor result = database.rawQuery("SELECT * FROM " + RSSI_TABLE_NAME, null);
+//        result.moveToFirst();
+//        while (!result.isAfterLast()) {
+//            Integer distance = result.getInt(0), rssi = result.getInt(1);
+//            if (!map.containsKey(distance))
+//                map.put(distance, new ArrayList<Integer>());
+//            map.get(distance).add(rssi);
+//            // do something useful with these
+//            result.moveToNext();
+//        }
+//        result.close();
+//        return map;
+//    }
+
+    public HashMap<Integer, Integer> get() {
+        HashMap<Integer, Integer> map = new HashMap<>();
         Cursor result = database.rawQuery("SELECT * FROM " + RSSI_TABLE_NAME, null);
         result.moveToFirst();
         while (!result.isAfterLast()) {
             Integer distance = result.getInt(0), rssi = result.getInt(1);
-            if (!map.containsKey(distance))
-                map.put(distance, new ArrayList<Integer>());
-            map.get(distance).add(rssi);
+            map.put(distance, rssi);
             // do something useful with these
             result.moveToNext();
         }

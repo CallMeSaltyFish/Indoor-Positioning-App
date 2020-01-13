@@ -133,6 +133,10 @@ public class DashboardFragment extends Fragment {
         isActive = true;
     }
 
+    private void eraseChart(){
+        rssiChart.eraseChart();
+    }
+
     private void updateChart(int rssi, int idx) {
         rssiChart.updateChart(rssi, idx);
     }
@@ -160,6 +164,7 @@ public class DashboardFragment extends Fragment {
     private void startScan() {
         Intent startIntent = new Intent(getActivity(), DeviceScanner.class);
         getActivity().bindService(startIntent, scannerConn, BIND_AUTO_CREATE);
+        eraseChart();
     }
 
     private void stopScan() {
