@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <TextView
+            android:id="@+id/dialog_device_setting_addr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/device_addr" />
+
+    <EditText
+            android:id="@+id/dialog_device_setting_addr_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    <TextView
+            android:id="@+id/dialog_device_setting_position_x"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/device_position_x" />
+
+    <EditText
+            android:id="@+id/dialog_device_setting_position_x_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+    <TextView
+            android:id="@+id/dialog_device_setting_position_y"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/device_position_y" />
+
+    <EditText
+            android:id="@+id/dialog_device_setting_position_y_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+</LinearLayout>

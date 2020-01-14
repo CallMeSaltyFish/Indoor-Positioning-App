@@ -95,8 +95,12 @@ public class RSSIChart {
     }
 
     public void eraseChart() {
-        chartView.setLineChartData(null);
-        chartView.setVisibility(View.INVISIBLE);
+        for(List<PointValue> pointList:chartPointValues)
+            pointList.clear();
+        for(Line line:lines)
+            line.setValues(null);
+        chartData.setLines(lines);
+        chartView.setLineChartData(chartData);
     }
 
 }

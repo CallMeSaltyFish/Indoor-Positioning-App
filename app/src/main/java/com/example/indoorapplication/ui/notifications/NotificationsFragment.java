@@ -23,8 +23,8 @@ public class NotificationsFragment extends Fragment {
     private NotificationsViewModel notificationsViewModel;
     private Button dataProcessingButton;
     private DataChart dataChart;
-    private List<PointValue> pointValues;
     private LineChartView chartView;
+    private HashMap<Integer, Integer> points;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,18 +51,27 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void updatePointValue() {
-        pointValues = new ArrayList<>();
-        HashMap<Integer, ArrayList<Integer>> map = new Database(getContext()).get();
-        for (Map.Entry entry : map.entrySet()) {
-            int distance = (int) entry.getKey();
-            List<Integer> rssiList = (ArrayList<Integer>) entry.getValue();
-            for (int rssi : rssiList)
-                pointValues.add(new PointValue(rssi, distance));
+        points = new Database(getContext()).get();
+        List<PointValue> pointValues = new ArrayList<>();
+//        HashMap<Integer, ArrayList<Integer>> map = new Database(getContext()).get();
+//        for (Map.Entry entry : map.entrySet()) {
+//            int distance = (int) entry.getKey();
+//            List<Integer> rssiList = (ArrayList<Integer>) entry.getValue();
+//            for (int rssi : rssiList)
+//                pointValues.add(new PointValue(rssi, distance));
+//        }
+        for (Integer distance : points.keySet()) {
+            int rssi = points.get(distance);
+            pointValues.add(new PointValue(rssi, distance));
         }
         dataChart.updateChart(pointValues);
     }
 
     private void processData() {
+        List<Integer> rssiList = new ArrayList(points.keySet());
+        Collections.sort(rssiList);
+        for (Integer rssi : rssiList)
+            System.out.println("(" + rssi + ", " + points.get(rssi) + ")");
         System.out.println("process data");
     }
 }

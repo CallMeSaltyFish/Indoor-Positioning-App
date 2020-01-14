@@ -7,8 +7,15 @@
     <string name="start_scan">开始扫描</string>
     <string name="stop_scan">停止扫描</string>
     <string name="distance">距离</string>
+    <string name="device">设备</string>
     <string name="device_0">设备1：</string>
     <string name="device_1">设备2：</string>
     <string name="device_2">设备3：</string>
     <string name="data_processing">处理数据</string>
+    <string name="settings">设置</string>
+    <string name="device_addr">MAC地址</string>
+    <string name="device_position">坐标</string>
+    <string name="device_position_x">X坐标</string>
+    <string name="device_position_y">Y坐标</string>
+    <string name="confirm_settings">确定</string>
 </resources>
