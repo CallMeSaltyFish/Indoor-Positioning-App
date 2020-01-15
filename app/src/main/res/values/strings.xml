@@ -12,6 +12,7 @@
     <string name="device_1">设备2：</string>
     <string name="device_2">设备3：</string>
     <string name="data_processing">处理数据</string>
+    <string name="data_saving">保存数据</string>
     <string name="settings">设置</string>
     <string name="device_addr">MAC地址</string>
     <string name="device_position">坐标</string>
