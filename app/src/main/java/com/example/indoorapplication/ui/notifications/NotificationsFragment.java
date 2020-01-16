@@ -1,20 +1,17 @@
 package com.example.indoorapplication.ui.notifications;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.indoorapplication.DataChart;
 import com.example.indoorapplication.R;
 import com.example.indoorapplication.util.Database;
-import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.view.LineChartView;
 
 import java.io.*;
@@ -26,7 +23,8 @@ public class NotificationsFragment extends Fragment {
     private final static String DATA_FILE = "/data.txt";
     private NotificationsViewModel notificationsViewModel;
     private Button dataProcessingButton;
-    private Button dataSavingButton;
+    private Button dataExportButton;
+    private Button dataImportButton;
     private DataChart dataChart;
     private LineChartView chartView;
     private HashMap<Integer, Integer> points;
@@ -46,11 +44,18 @@ public class NotificationsFragment extends Fragment {
                 processData();
             }
         });
-        dataSavingButton = root.findViewById(R.id.data_saving_button);
-        dataSavingButton.setOnClickListener(new View.OnClickListener() {
+        dataExportButton = root.findViewById(R.id.data_export_button);
+        dataExportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveData();
+                exportData();
+            }
+        });
+        dataImportButton = root.findViewById(R.id.data_import_button);
+        dataImportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                importData();
             }
         });
         return root;
@@ -63,20 +68,19 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void updatePointValue() {
-        points = new Database(getContext()).get();
-        List<PointValue> pointValues = new ArrayList<>();
-//        HashMap<Integer, ArrayList<Integer>> map = new Database(getContext()).get();
+        updatePointValue(new Database(getContext()).get());
+    }
+
+    private void updatePointValue(HashMap<Integer, Integer> map) {
+        points = map;
+        //        HashMap<Integer, ArrayList<Integer>> map = new Database(getContext()).get();
 //        for (Map.Entry entry : map.entrySet()) {
 //            int distance = (int) entry.getKey();
 //            List<Integer> rssiList = (ArrayList<Integer>) entry.getValue();
 //            for (int rssi : rssiList)
 //                pointValues.add(new PointValue(rssi, distance));
 //        }
-        for (Integer distance : points.keySet()) {
-            int rssi = points.get(distance);
-            pointValues.add(new PointValue(rssi, distance));
-        }
-        dataChart.updateChart(pointValues);
+        dataChart.updateChart(points);
     }
 
     private void processData() {
@@ -87,18 +91,17 @@ public class NotificationsFragment extends Fragment {
         System.out.println("process data");
     }
 
-    private void saveData() {
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);//Get IO permission
+    private void exportData() {
         File baseDirectory = getContext().getExternalFilesDir(null);
         if (!baseDirectory.exists())
             baseDirectory.mkdir();
-
-        OutputStreamWriter wout = null;
+        BufferedWriter wout = null;
         try {
-            wout = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(baseDirectory.getPath() + DATA_FILE)));
+            wout = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(baseDirectory.getPath() + DATA_FILE)));
             for (Integer distance : points.keySet()) {
                 int rssi = points.get(distance);
-                wout.write(distance + "=" + rssi + '\n');
+                wout.write(distance + "=" + rssi);
+                wout.newLine();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -113,5 +116,35 @@ public class NotificationsFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private void importData() {
+        File dataFile = new File(getContext().getExternalFilesDir(null), DATA_FILE);
+        if (!dataFile.exists())
+            return;
+        BufferedReader rin = null;
+        HashMap<Integer, Integer> result = new HashMap<>();
+        try {
+            rin = new BufferedReader(new InputStreamReader(new FileInputStream(dataFile)));
+            for (String line = rin.readLine(); line != null; line = rin.readLine()) {
+                String[] tokens = line.split("=");
+                Integer distance = Integer.parseInt(tokens[0]);
+                Integer rssi = Integer.parseInt(tokens[1]);
+                result.put(distance, rssi);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (rin != null) {
+                try {
+                    rin.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        updatePointValue(result);
     }
 }

@@ -28,6 +28,15 @@ public class DataChart {
         dataPoints.setHasPoints(true);
     }
 
+    public void updateChart(HashMap<Integer, Integer> points) {
+        List<PointValue> chartPointValues = new ArrayList<>();
+        for (Integer distance : points.keySet()) {
+            int rssi = points.get(distance);
+            chartPointValues.add(new PointValue(rssi, distance));
+        }
+        updateChart(chartPointValues);
+    }
+
     public void updateChart(List<PointValue> chartPointValues) {
         dataPoints.setValues(chartPointValues);
         chartData.setLines(Arrays.asList(dataPoints));
