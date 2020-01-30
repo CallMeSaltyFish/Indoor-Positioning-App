@@ -1,14 +1,21 @@
 package com.example.indoorapplication.ui.home;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.indoorapplication.DeviceScanner;
 import com.example.indoorapplication.MapImageView;
 import com.example.indoorapplication.R;
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
@@ -18,17 +25,70 @@ import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
+import static android.content.Context.BIND_AUTO_CREATE;
+
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class HomeFragment extends Fragment {
 
+    private boolean isActive;
     private HomeViewModel homeViewModel;
+    private DeviceScanner scanner;
+    private ServiceConnection scannerConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            scanner = ((DeviceScanner.ScannerBinder) iBinder).getScanner();
+            scanner.setScannerListener(new DeviceScanner.ScannerListener() {
+                @Override
+                public void updateScanResult(final int rssi, final int idx) {
+                    if (getActivity() == null || !isActive)
+                        return;
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updatePosition(rssi, idx);
+                            //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
+                            //scanner.getDatabase().add(distance, rssi);
+                            //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
+                        }
+                    });
+                }
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
-        ((ImageView)root.findViewById(R.id.map_view)).setImageResource(R.drawable.zxc);
-        getPosition();
+        View root = inflater.inflate(R.layout.fragment_home, container,  false);
+        ((ImageView) root.findViewById(R.id.map_view)).setImageResource(R.drawable.zxc);
+        startScan();
+        //getPosition();
         return root;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isActive = false;
+        stopScan();
+        //rssiChart.eraseChart();
+        //getActivity().unbindService(scannerConn);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startScan();
+        isActive = true;
+    }
+
+    private void updatePosition(int rssi, int idx) {
+        System.out.println("=====" + rssi + "," + idx + "=============");
     }
 
     private void getPosition() {
@@ -49,5 +109,18 @@ public class HomeFragment extends Fragment {
         for (double d : centroid)
             System.out.println(d);
         System.out.println("===================================================");
+    }
+
+    private void startScan() {
+        isActive = true;
+        Intent startIntent = new Intent(getActivity(), DeviceScanner.class);
+        getActivity().bindService(startIntent, scannerConn, BIND_AUTO_CREATE);
+        System.out.println("start!!!!!!!!!!!!!!!!!!!!!!!!!!11");
+    }
+
+    private void stopScan() {
+        isActive = false;
+        getActivity().unbindService(scannerConn);
+        System.out.println("stop==============");
     }
 }
