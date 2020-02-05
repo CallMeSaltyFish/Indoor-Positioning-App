@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +28,14 @@ import org.apache.commons.math3.linear.RealVector;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
+import java.util.*;
+
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class HomeFragment extends Fragment {
 
     private boolean isActive;
+    private int[] hasRssi = {0, 0, 0};
+    private int[] rssiList = {0, 0, 0};
     private HomeViewModel homeViewModel;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
@@ -45,7 +50,7 @@ public class HomeFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updatePosition(rssi, idx);
+                            updateRssi(rssi, idx);
                             //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
                             //scanner.getDatabase().add(distance, rssi);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
@@ -64,9 +69,10 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_home, container,  false);
+        View root = inflater.inflate(R.layout.fragment_home, container, false);
         ((ImageView) root.findViewById(R.id.map_view)).setImageResource(R.drawable.zxc);
         startScan();
+        listenForUpdatingPosition();
         //getPosition();
         return root;
     }
@@ -87,8 +93,25 @@ public class HomeFragment extends Fragment {
         isActive = true;
     }
 
-    private void updatePosition(int rssi, int idx) {
+    private void listenForUpdatingPosition() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    if (Arrays.binarySearch(hasRssi, 0) < 0) {
+                        //getPosition();
+                        System.out.println("new position");
+                    } else
+                        System.out.println("no new position");
+                }
+            }
+        }, 1000);
+    }
+
+    private void updateRssi(int rssi, int idx) {
         System.out.println("=====" + rssi + "," + idx + "=============");
+        hasRssi[idx] = 1;
+        rssiList[idx] = rssi;
     }
 
     private void getPosition() {
