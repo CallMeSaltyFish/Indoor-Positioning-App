@@ -42,7 +42,6 @@ public class DashboardFragment extends Fragment {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             scanner = ((DeviceScanner.ScannerBinder) iBinder).getScanner();
             scanner.setScannerListener(new DeviceScanner.ScannerListener() {
-                @Override
                 public void updateScanResult(final int rssi, final int idx) {
                     if (getActivity() == null || !isActive)
                         return;
@@ -57,6 +56,9 @@ public class DashboardFragment extends Fragment {
                         }
                     });
                 }
+
+                @Override
+                public void updatePosition(int x, int y) {}
             });
         }
 

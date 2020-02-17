@@ -34,23 +34,26 @@ import java.util.*;
 public class HomeFragment extends Fragment {
 
     private boolean isActive;
-    private int flag = 0;
-    private int[] rssiList = {0, 0, 0};
     private HomeViewModel homeViewModel;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             scanner = ((DeviceScanner.ScannerBinder) iBinder).getScanner();
+            scanner.setDataCollectingMode(false);
             scanner.setScannerListener(new DeviceScanner.ScannerListener() {
                 @Override
                 public void updateScanResult(final int rssi, final int idx) {
+                }
+
+                @Override
+                public void updatePosition(final int x, final int y) {
                     if (getActivity() == null || !isActive)
                         return;
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateRssi(rssi, idx);
+                            displayPosition(x, y);
                             //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
                             //scanner.getDatabase().add(distance, rssi);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
@@ -72,7 +75,7 @@ public class HomeFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         ((ImageView) root.findViewById(R.id.map_view)).setImageResource(R.drawable.zxc);
         startScan();
-        listenForUpdatingPosition();
+        //listenForUpdatingPosition();
         //getPosition();
         return root;
     }
@@ -93,26 +96,24 @@ public class HomeFragment extends Fragment {
         isActive = true;
     }
 
-    private void listenForUpdatingPosition() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    if (flag == 7) {
-                        //getPosition();
-                        System.out.println("new position");
-                        flag = 0;
-                    } else
-                        System.out.println("no new position");
-                }
-            }
-        }, 1000);
-    }
+//    private void listenForUpdatingPosition() {
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    if (flag == 7) {
+//                        //getPosition();
+//                        System.out.println("new position");
+//                        flag = 0;
+//                    } else
+//                        System.out.println("no new position");
+//                }
+//            }
+//        }, 1000);
+//    }
 
-    private void updateRssi(int rssi, int idx) {
-        System.out.println("=====" + rssi + "," + idx + "=============");
-        flag |= (1 << idx);
-        rssiList[idx] = rssi;
+    private void displayPosition(int x, int y) {
+        System.out.println("=====" + x + "," + y + "=============");
     }
 
     private void getPosition() {
