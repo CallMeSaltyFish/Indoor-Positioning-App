@@ -34,7 +34,7 @@ import java.util.*;
 public class HomeFragment extends Fragment {
 
     private boolean isActive;
-    private int[] hasRssi = {0, 0, 0};
+    private int flag = 0;
     private int[] rssiList = {0, 0, 0};
     private HomeViewModel homeViewModel;
     private DeviceScanner scanner;
@@ -98,9 +98,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 while (true) {
-                    if (Arrays.binarySearch(hasRssi, 0) < 0) {
+                    if (flag == 7) {
                         //getPosition();
                         System.out.println("new position");
+                        flag = 0;
                     } else
                         System.out.println("no new position");
                 }
@@ -110,7 +111,7 @@ public class HomeFragment extends Fragment {
 
     private void updateRssi(int rssi, int idx) {
         System.out.println("=====" + rssi + "," + idx + "=============");
-        hasRssi[idx] = 1;
+        flag |= (1 << idx);
         rssiList[idx] = rssi;
     }
 
@@ -138,12 +139,10 @@ public class HomeFragment extends Fragment {
         isActive = true;
         Intent startIntent = new Intent(getActivity(), DeviceScanner.class);
         getActivity().bindService(startIntent, scannerConn, BIND_AUTO_CREATE);
-        System.out.println("start!!!!!!!!!!!!!!!!!!!!!!!!!!11");
     }
 
     private void stopScan() {
         isActive = false;
         getActivity().unbindService(scannerConn);
-        System.out.println("stop==============");
     }
 }
