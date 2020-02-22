@@ -3,6 +3,10 @@ package com.example.indoorapplication.ui.home;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +22,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.indoorapplication.DeviceScanner;
 import com.example.indoorapplication.MapImageView;
+import com.example.indoorapplication.MapLayout;
 import com.example.indoorapplication.R;
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
@@ -73,8 +78,10 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        ((ImageView) root.findViewById(R.id.map_view)).setImageResource(R.drawable.zxc);
-        startScan();
+        //((ImageView) root.findViewById(R.id.map_view)).setImageResource(R.drawable.zxc);
+        MapLayout mapLayout = root.findViewById(R.id.map_layout);
+        Bitmap bitmap = BitmapFactory.decodeResource(root.getResources(),R.drawable.zxc);
+        mapLayout.setImgBg(bitmap.getWidth(),bitmap.getHeight(), R.drawable.zxc);
         //listenForUpdatingPosition();
         //getPosition();
         return root;

@@ -3,10 +3,8 @@ package com.example.indoorapplication;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.PointF;
-import android.graphics.RectF;
+import android.graphics.*;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -617,6 +615,9 @@ public class MapImageView extends ImageView  {
         } else {
             super.onDraw(canvas);
         }
+//        Paint paint = new Paint();
+//        paint.setColor(Color.RED);
+//        canvas.drawCircle(110,110,210,paint);
     }
 
 
