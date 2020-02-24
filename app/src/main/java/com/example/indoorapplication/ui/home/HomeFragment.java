@@ -5,40 +5,38 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-
 import com.example.indoorapplication.DeviceScanner;
-import com.example.indoorapplication.MapImageView;
-import com.example.indoorapplication.MapLayout;
 import com.example.indoorapplication.R;
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
+import indoormaps.ninepatch.com.library.IndoorMapsView;
+import indoormaps.ninepatch.com.library.Marker;
+import indoormaps.ninepatch.com.library.Style;
+import indoormaps.ninepatch.com.library.callback.OnMapViewInizializate;
+import indoormaps.ninepatch.com.library.zoom.ZOOM;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
-
 import static android.content.Context.BIND_AUTO_CREATE;
 
-import java.util.*;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class HomeFragment extends Fragment {
 
     private boolean isActive;
+    private IndoorMapsView indoorMapsView;
+   // private MapLayout mapLayout;
     private HomeViewModel homeViewModel;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
@@ -58,7 +56,7 @@ public class HomeFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            displayPosition(x, y);
+                            displayPosition(0.1,0.4);//displayPosition(x, y);
                             //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
                             //scanner.getDatabase().add(distance, rssi);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
@@ -78,10 +76,28 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        //((ImageView) root.findViewById(R.id.map_view)).setImageResource(R.drawable.zxc);
-        MapLayout mapLayout = root.findViewById(R.id.map_layout);
-        Bitmap bitmap = BitmapFactory.decodeResource(root.getResources(),R.drawable.zxc);
-        mapLayout.setImgBg(bitmap.getWidth(),bitmap.getHeight(), R.drawable.zxc);
+
+        indoorMapsView = (IndoorMapsView) root.findViewById(R.id.map_view);
+
+        indoorMapsView.getIndoorViewListener().setOnMapViewInizializate(new OnMapViewInizializate() {
+            @Override
+            public void onMapLoading() {
+
+            }
+
+            @Override
+            public void onMapinizializate() {
+
+                indoorMapsView.init("mappa2.png", ZOOM.LEVEL4); //image from assets or put link
+                indoorMapsView.setBackgroundColorRes(R.color.colorPrimary);
+
+            }
+
+        });
+
+//        mapLayout = root.findViewById(R.id.map_layout);
+//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.zxc);
+//        mapLayout.setImgBg(bitmap.getWidth(), bitmap.getHeight(), R.drawable.zxc);
         //listenForUpdatingPosition();
         //getPosition();
         return root;
@@ -119,8 +135,22 @@ public class HomeFragment extends Fragment {
 //        }, 1000);
 //    }
 
-    private void displayPosition(int x, int y) {
-        System.out.println("=====" + x + "," + y + "=============");
+    private void displayPosition(double x, double y) {
+        Marker marker = new Marker(getContext());
+        marker.setId(1);
+        marker.setLat(36.8271);
+        marker.setLon(32.9731);
+        marker.setName("pos");
+        marker.setImageLink("pointer.png");//from assets or put link
+
+        //set Marker Style
+        Style style = new Style(getContext());
+        style.setLabelColor(R.color.colorAccent);
+        style.setLabelPx(22);
+        style.setShowLabel(true);
+        marker.setStyle(style);
+
+        indoorMapsView.addMarker(marker);
     }
 
     private void getPosition() {
