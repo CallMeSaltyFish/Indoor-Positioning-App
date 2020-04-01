@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,15 +29,19 @@ import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
+
+import java.util.Random;
+
 import static android.content.Context.BIND_AUTO_CREATE;
 
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class HomeFragment extends Fragment {
-
+    int i = 0;
+    private Marker marker;
     private boolean isActive;
     private IndoorMapsView indoorMapsView;
-   // private MapLayout mapLayout;
+    // private MapLayout mapLayout;
     private HomeViewModel homeViewModel;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
@@ -53,15 +58,22 @@ public class HomeFragment extends Fragment {
                 public void updatePosition(final int x, final int y) {
                     if (getActivity() == null || !isActive)
                         return;
-                    getActivity().runOnUiThread(new Runnable() {
+                    Handler handler = new Handler();
+                    getView().post(new Runnable() {
                         @Override
                         public void run() {
-                            displayPosition(0.1,0.4);//displayPosition(x, y);
-                            //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
-                            //scanner.getDatabase().add(distance, rssi);
-                            //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
+                            displayPosition(0.2, 0.2);
                         }
                     });
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            displayPosition(0.1,0.4);//displayPosition(x, y);
+//                            //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
+//                            //scanner.getDatabase().add(distance, rssi);
+//                            //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
+//                        }
+//                    });
                 }
             });
         }
@@ -76,9 +88,7 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-
         indoorMapsView = (IndoorMapsView) root.findViewById(R.id.map_view);
-
         indoorMapsView.getIndoorViewListener().setOnMapViewInizializate(new OnMapViewInizializate() {
             @Override
             public void onMapLoading() {
@@ -87,12 +97,10 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onMapinizializate() {
-
                 indoorMapsView.init("mappa2.png", ZOOM.LEVEL4); //image from assets or put link
                 indoorMapsView.setBackgroundColorRes(R.color.colorPrimary);
 
             }
-
         });
 
 //        mapLayout = root.findViewById(R.id.map_layout);
@@ -136,20 +144,22 @@ public class HomeFragment extends Fragment {
 //    }
 
     private void displayPosition(double x, double y) {
-        Marker marker = new Marker(getContext());
-        marker.setId(1);
-        marker.setLat(36.8271);
-        marker.setLon(32.9731);
+        Marker prevMarker = marker;
+        marker = new Marker(getContext());
+        marker.setId(0);
+        marker.setLat(i);
+        marker.setLon(i);
+        i += 15;
         marker.setName("pos");
         marker.setImageLink("pointer.png");//from assets or put link
-
         //set Marker Style
         Style style = new Style(getContext());
         style.setLabelColor(R.color.colorAccent);
         style.setLabelPx(22);
         style.setShowLabel(true);
         marker.setStyle(style);
-
+        if (prevMarker != null)
+            indoorMapsView.removeMarker(prevMarker);
         indoorMapsView.addMarker(marker);
     }
 

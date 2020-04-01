@@ -41,6 +41,7 @@ public class DashboardFragment extends Fragment {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             scanner = ((DeviceScanner.ScannerBinder) iBinder).getScanner();
+            scanner.setDataCollectingMode(true);
             scanner.setScannerListener(new DeviceScanner.ScannerListener() {
                 public void updateScanResult(final int rssi, final int idx) {
                     if (getActivity() == null || !isActive)
