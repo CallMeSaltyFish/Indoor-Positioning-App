@@ -24,7 +24,7 @@ import java.util.*;
 @SuppressLint("NewApi")
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
-    private static final String[] DEFAULT_DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61", "C4:CE:DA:A2:25:62"};
+    private static final String[] DEFAULT_DEVICE_ADDRS = {"F6:6E:39:E8:EF:28", "C4:CE:DA:A2:25:61", "CB:DE:EF:D0:07:B1"};
     private static final Double[][] DEFAULT_DEVICE_POSITIONS = {{0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}};
     private HomeFragment homeFragment;
     private static String[] deviceAddrs;
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         devicePositions[idx] = new Double[]{x, y};
     }
 
-    public static String[] getDeviceAddrs(){
+    public static String[] getDeviceAddrs() {
         return deviceAddrs;
     }
 

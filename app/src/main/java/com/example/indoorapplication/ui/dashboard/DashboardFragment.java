@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
@@ -34,6 +35,8 @@ public class DashboardFragment extends Fragment {
     private Button startScanButton;
     private Button stopScanButton;
     private RSSIChart rssiChart;
+    private List<TextView> rssiTextViews;
+    private List<TextView> calculatedDistanceTextViews;
     private List<EditText> distanceEditTexts;
     private List<List<Integer>> rssiLists;
     private DeviceScanner scanner;
@@ -51,6 +54,7 @@ public class DashboardFragment extends Fragment {
                         public void run() {
                             //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
                             //scanner.getDatabase().add(distance, rssi);
+                            showRSSI(rssi, idx);
                             updateChart(rssi, idx);
                             addRSSI(rssi, idx);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
@@ -59,7 +63,8 @@ public class DashboardFragment extends Fragment {
                 }
 
                 @Override
-                public void updatePosition(int x, int y) {}
+                public void updatePosition(int x, int y) {
+                }
             });
         }
 
@@ -79,9 +84,14 @@ public class DashboardFragment extends Fragment {
         isScanning = false;
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        rssiTextViews = new ArrayList<>(3);
+        calculatedDistanceTextViews = new ArrayList<>(3);
         distanceEditTexts = new ArrayList<>(3);
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < 3; ++i) {
+            rssiTextViews.add((TextView) root.findViewById(getResources().getIdentifier("rssi_text_view_" + i, "id", getContext().getPackageName())));
+            calculatedDistanceTextViews.add((TextView) root.findViewById(getResources().getIdentifier("calculated_device_text_view_" + i, "id", getContext().getPackageName())));
             distanceEditTexts.add((EditText) root.findViewById(getResources().getIdentifier("distance_edit_text_" + i, "id", getContext().getPackageName())));
+        }
         startScanButton = root.findViewById(R.id.start_scan_button);
         startScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,12 +146,18 @@ public class DashboardFragment extends Fragment {
         isActive = true;
     }
 
-    private void eraseChart(){
+    private void eraseChart() {
         rssiChart.eraseChart();
     }
 
     private void updateChart(int rssi, int idx) {
         rssiChart.updateChart(rssi, idx);
+    }
+
+    private void showRSSI(Integer rssi, Integer idx) {
+        Integer distance = rssi;//getDistance();
+        rssiTextViews.get(idx).setText(rssi.toString());
+        calculatedDistanceTextViews.get(idx).setText(distance.toString());
     }
 
     private void addRSSI(int rssi, int idx) {
@@ -153,11 +169,14 @@ public class DashboardFragment extends Fragment {
             List<Integer> rssiList = rssiLists.get(i);
             if (rssiList.size() == 0)
                 continue;
+            String distanceText = distanceEditTexts.get(i).getText().toString();
+            if (distanceText.isEmpty())
+                continue;
             int sumRSSi = 0;
             for (int rssi : rssiList)
                 sumRSSi += rssi;
             int averageRSSI = sumRSSi / rssiList.size();
-            int distance = Integer.parseInt(distanceEditTexts.get(i).getText().toString());
+            int distance = Integer.parseInt(distanceText);
             scanner.getDatabase().add(distance, averageRSSI);
             //((TextView) getView().findViewById(R.id.device_rssi)).setText("Average: " + averageRSSI);
             rssiList.clear();

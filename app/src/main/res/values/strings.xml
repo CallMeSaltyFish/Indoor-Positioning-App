@@ -6,11 +6,13 @@
     <string name="rssi_textview_default">平均RSSI: </string>
     <string name="start_scan">开始扫描</string>
     <string name="stop_scan">停止扫描</string>
-    <string name="distance">距离</string>
+    <string name="distance">实际距离</string>
+    <string name="calculated_distance">距离</string>
+    <string name="rssi">RSSI</string>
     <string name="device">设备</string>
-    <string name="device_0">设备1：</string>
-    <string name="device_1">设备2：</string>
-    <string name="device_2">设备3：</string>
+    <string name="device_0">设备1</string>
+    <string name="device_1">设备2</string>
+    <string name="device_2">设备3</string>
     <string name="data_processing">处理数据</string>
     <string name="data_export">导出数据</string>
     <string name="data_import">导入数据</string>

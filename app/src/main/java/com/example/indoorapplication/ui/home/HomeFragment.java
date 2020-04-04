@@ -146,7 +146,7 @@ public class HomeFragment extends Fragment {
     private void displayPosition(double x, double y) {
         Marker prevMarker = marker;
         marker = new Marker(getContext());
-        marker.setId(0);
+        //marker.setId(0);
         marker.setLat(i);
         marker.setLon(i);
         i += 15;
