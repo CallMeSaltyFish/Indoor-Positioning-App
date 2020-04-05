@@ -98,7 +98,7 @@ public class DeviceScanner extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         bluetoothScanner.stopScan(scanCallback);
-        System.out.println(database.get());
+        System.out.println(database.getRSSI());
         return true;
     }
 

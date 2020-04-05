@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.indoorapplication.DeviceScanner;
 import com.example.indoorapplication.R;
 import com.example.indoorapplication.RSSIChart;
+import com.example.indoorapplication.util.Regression;
 import lecho.lib.hellocharts.view.LineChartView;
 
 import java.util.*;
@@ -54,9 +55,7 @@ public class DashboardFragment extends Fragment {
                         public void run() {
                             //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
                             //scanner.getDatabase().add(distance, rssi);
-                            showRSSI(rssi, idx);
-                            updateChart(rssi, idx);
-                            addRSSI(rssi, idx);
+                            updateRSSI(rssi, idx);
                             //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
                         }
                     });
@@ -150,19 +149,14 @@ public class DashboardFragment extends Fragment {
         rssiChart.eraseChart();
     }
 
-    private void updateChart(int rssi, int idx) {
-        rssiChart.updateChart(rssi, idx);
-    }
-
-    private void showRSSI(Integer rssi, Integer idx) {
-        Integer distance = rssi;//getDistance();
+    private void updateRSSI(Integer rssi, Integer idx) {
+        Double distance = Regression.calculateDistance(-rssi);
         rssiTextViews.get(idx).setText(rssi.toString());
         calculatedDistanceTextViews.get(idx).setText(distance.toString());
-    }
-
-    private void addRSSI(int rssi, int idx) {
+        rssiChart.updateChart(rssi, idx);
         rssiLists.get(idx).add(rssi);
     }
+
 
     private void updateAverageRSSI() {
         for (int i = 0; i < 3; ++i) {
@@ -177,7 +171,7 @@ public class DashboardFragment extends Fragment {
                 sumRSSi += rssi;
             int averageRSSI = sumRSSi / rssiList.size();
             int distance = Integer.parseInt(distanceText);
-            scanner.getDatabase().add(distance, averageRSSI);
+            scanner.getDatabase().addRSSI(distance, averageRSSI);
             //((TextView) getView().findViewById(R.id.device_rssi)).setText("Average: " + averageRSSI);
             rssiList.clear();
         }

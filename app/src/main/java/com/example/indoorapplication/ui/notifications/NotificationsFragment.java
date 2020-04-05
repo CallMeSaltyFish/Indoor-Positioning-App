@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.indoorapplication.DataChart;
 import com.example.indoorapplication.R;
 import com.example.indoorapplication.util.Database;
+import com.example.indoorapplication.util.Regression;
 import lecho.lib.hellocharts.view.LineChartView;
 
 import java.io.*;
@@ -68,7 +69,7 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void updatePointValue() {
-        updatePointValue(new Database(getContext()).get());
+        updatePointValue(new Database(getContext()).getRSSI());
     }
 
     private void updatePointValue(HashMap<Integer, Integer> map) {
@@ -89,6 +90,9 @@ public class NotificationsFragment extends Fragment {
         for (Integer rssi : rssiList)
             System.out.println("(" + rssi + ", " + points.get(rssi) + ")");
         System.out.println("process data");
+        Double[] list = {0.0012, -0.2036, 11.5325, -211.5911};
+        Regression.updateCoeffient(list);
+        System.out.println(new Database(getContext()).getRegressionCoefficient());
     }
 
     private void exportData() {

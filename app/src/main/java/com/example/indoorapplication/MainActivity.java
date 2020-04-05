@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import com.example.indoorapplication.ui.home.HomeFragment;
+import com.example.indoorapplication.util.Regression;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
 //        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 //        NavigationUI.setupWithNavController(navView, navController);
+
+        Regression.initialize(getApplicationContext());
+
         deviceAddrs = Arrays.copyOf(DEFAULT_DEVICE_ADDRS, DEFAULT_DEVICE_ADDRS.length);
         devicePositions = Arrays.copyOf(DEFAULT_DEVICE_POSITIONS, DEFAULT_DEVICE_POSITIONS.length);
 
