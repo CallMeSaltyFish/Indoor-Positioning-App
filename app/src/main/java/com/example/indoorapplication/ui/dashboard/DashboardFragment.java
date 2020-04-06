@@ -62,7 +62,7 @@ public class DashboardFragment extends Fragment {
                 }
 
                 @Override
-                public void updatePosition(int x, int y) {
+                public void updatePosition(double x, double y) {
                 }
             });
         }
@@ -150,7 +150,7 @@ public class DashboardFragment extends Fragment {
     }
 
     private void updateRSSI(Integer rssi, Integer idx) {
-        Double distance = Regression.calculateDistance(-rssi);
+        Double distance = Regression.calculateDistance(rssi);
         rssiTextViews.get(idx).setText(rssi.toString());
         calculatedDistanceTextViews.get(idx).setText(distance.toString());
         rssiChart.updateChart(rssi, idx);

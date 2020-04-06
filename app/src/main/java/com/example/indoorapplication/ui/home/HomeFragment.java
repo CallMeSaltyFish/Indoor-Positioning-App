@@ -3,8 +3,6 @@ package com.example.indoorapplication.ui.home;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,26 +16,17 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import com.example.indoorapplication.DeviceScanner;
 import com.example.indoorapplication.R;
-import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
-import com.lemmingapex.trilateration.TrilaterationFunction;
 import indoormaps.ninepatch.com.library.IndoorMapsView;
 import indoormaps.ninepatch.com.library.Marker;
 import indoormaps.ninepatch.com.library.Style;
 import indoormaps.ninepatch.com.library.callback.OnMapViewInizializate;
 import indoormaps.ninepatch.com.library.zoom.ZOOM;
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
-import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
-
-import java.util.Random;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class HomeFragment extends Fragment {
-    int i = 0;
     private Marker marker;
     private boolean isActive;
     private IndoorMapsView indoorMapsView;
@@ -55,14 +44,14 @@ public class HomeFragment extends Fragment {
                 }
 
                 @Override
-                public void updatePosition(final int x, final int y) {
+                public void updatePosition(final double x, final double y) {
                     if (getActivity() == null || !isActive)
                         return;
                     Handler handler = new Handler();
                     getView().post(new Runnable() {
                         @Override
                         public void run() {
-                            displayPosition(0.2, 0.2);
+                            displayPosition(x, y);
                         }
                     });
 //                    getActivity().runOnUiThread(new Runnable() {
@@ -107,7 +96,6 @@ public class HomeFragment extends Fragment {
 //        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.zxc);
 //        mapLayout.setImgBg(bitmap.getWidth(), bitmap.getHeight(), R.drawable.zxc);
         //listenForUpdatingPosition();
-        //getPosition();
         return root;
     }
 
@@ -147,9 +135,8 @@ public class HomeFragment extends Fragment {
         Marker prevMarker = marker;
         marker = new Marker(getContext());
         //marker.setId(0);
-        marker.setLat(i);
-        marker.setLon(i);
-        i += 15;
+        marker.setLat(x);
+        marker.setLon(y);
         marker.setName("pos");
         marker.setImageLink("pointer.png");//from assets or put link
         //set Marker Style
@@ -163,25 +150,20 @@ public class HomeFragment extends Fragment {
         indoorMapsView.addMarker(marker);
     }
 
-    private void getPosition() {
-        double[][] positions = new double[][]{{5.0, -6.0}, {13.0, -15.0}, {21.0, -3.0}, {12.4, -21.2}};
-        double[] distances = new double[]{8.06, 13.97, 23.32, 15.31};
-
-        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
-        LeastSquaresOptimizer.Optimum optimum = solver.solve();
-
-        // the answer
-        double[] centroid = optimum.getPoint().toArray();
-
-        // error and geometry information; may throw SingularMatrixException depending the threshold argument provided
-        RealVector standardDeviation = optimum.getSigma(0);
-        RealMatrix covarianceMatrix = optimum.getCovariances(0);
-
-        System.out.println("===================================================");
-        for (double d : centroid)
-            System.out.println(d);
-        System.out.println("===================================================");
-    }
+//    private double[] getPosition(double[] distances) {
+//        double[][] positions = new double[][]{{0, 0}, {0, 5}, {12, 0}};
+//
+//        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
+//        LeastSquaresOptimizer.Optimum optimum = solver.solve();
+//
+//        // the answer
+//        double[] centroid = optimum.getPoint().toArray();
+//
+//        // error and geometry information; may throw SingularMatrixException depending the threshold argument provided
+//        RealVector standardDeviation = optimum.getSigma(0);
+//        RealMatrix covarianceMatrix = optimum.getCovariances(0);
+//        return centroid;
+//    }
 
     private void startScan() {
         isActive = true;

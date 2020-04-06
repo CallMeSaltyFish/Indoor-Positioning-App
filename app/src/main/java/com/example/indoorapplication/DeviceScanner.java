@@ -1,15 +1,12 @@
 package com.example.indoorapplication;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ListActivity;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
-import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
@@ -17,7 +14,11 @@ import android.os.*;
 import androidx.annotation.RequiresApi;
 
 import com.example.indoorapplication.util.Database;
-import com.example.indoorapplication.util.ScanRecordParser;
+import com.example.indoorapplication.util.Regression;
+import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
+import com.lemmingapex.trilateration.TrilaterationFunction;
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 
 import java.util.*;
 
@@ -27,6 +28,7 @@ public class DeviceScanner extends Service {
 
     //    private static final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
     // Stops scanning after given seconds.
+    private double[][] devicePositions = {{0, 0}, {10, 0}, {0, 10}};
     private boolean dataCollectingMode = false;
     private static final long SCAN_PERIOD = 100000;
     //private boolean mScanning;
@@ -40,10 +42,12 @@ public class DeviceScanner extends Service {
     private ScanCallback scanCallback = new ScanCallback() {
         int flag;
         int[] rssiList;
+        double[] distances;
 
         {
             flag = 0;
-            rssiList = new int[]{0, 0, 0};
+            //rssiList = new int[]{0, 0, 0};
+            distances = new double[]{0, 0, 0};
         }
 
         @Override
@@ -57,12 +61,15 @@ public class DeviceScanner extends Service {
                     scannerListener.updateScanResult(rssi, idx);
                 else {
                     flag |= (1 << idx);
-                    rssiList[idx] = rssi;
-                    if (true) {
-                        //if (flag == 7) {
-                        //getPosition();
-                        System.out.println("new position");
-                        scannerListener.updatePosition(100, 100);
+                    distances[idx] = Regression.calculateDistance(rssi);
+                    //if (true) {
+                    if (flag == 7) {
+                        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(devicePositions, distances), new LevenbergMarquardtOptimizer());
+                        LeastSquaresOptimizer.Optimum optimum = solver.solve();
+                        // the answer
+                        double[] position = optimum.getPoint().toArray();
+                        System.out.println("new position " + position[0] + "," + position[1]);
+                        scannerListener.updatePosition(position[0], position[1]);
                         flag = 0;
                     } else
                         System.out.println("no new position");
@@ -82,7 +89,7 @@ public class DeviceScanner extends Service {
     public interface ScannerListener {
         void updateScanResult(final int rssi, final int idx);
 
-        void updatePosition(final int x, final int y);
+        void updatePosition(final double x, final double y);
     }
 
     public void setScannerListener(ScannerListener listener) {

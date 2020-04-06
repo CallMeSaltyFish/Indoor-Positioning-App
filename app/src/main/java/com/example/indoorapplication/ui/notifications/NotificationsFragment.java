@@ -90,7 +90,7 @@ public class NotificationsFragment extends Fragment {
         for (Integer rssi : rssiList)
             System.out.println("(" + rssi + ", " + points.get(rssi) + ")");
         System.out.println("process data");
-        Double[] list = {0.0012, -0.2036, 11.5325, -211.5911};
+        Double[] list = {-0.0014, -0.2416, -13.8743, -258.5056};
         Regression.updateCoeffient(list);
         System.out.println(new Database(getContext()).getRegressionCoefficient());
     }
