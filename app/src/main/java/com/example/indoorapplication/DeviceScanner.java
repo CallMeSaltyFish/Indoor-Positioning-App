@@ -13,10 +13,7 @@ import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
-import android.os.Binder;
-import android.os.Build;
-import android.os.Handler;
-import android.os.IBinder;
+import android.os.*;
 import androidx.annotation.RequiresApi;
 
 import com.example.indoorapplication.util.Database;
@@ -28,9 +25,9 @@ import java.util.*;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DeviceScanner extends Service {
 
-//    private static final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
-//    private static final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61"};
+    //    private static final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
     // Stops scanning after given seconds.
+    private boolean dataCollectingMode = false;
     private static final long SCAN_PERIOD = 100000;
     //private boolean mScanning;
     private Database database;
@@ -41,13 +38,35 @@ public class DeviceScanner extends Service {
     private List<ScanFilter> scanFilters;
     private ScanSettings scanSettings;
     private ScanCallback scanCallback = new ScanCallback() {
+        int flag;
+        int[] rssiList;
+
+        {
+            flag = 0;
+            rssiList = new int[]{0, 0, 0};
+        }
+
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             int idx = getDeviceIndex(result);
             if (idx != -1) {
                 System.out.println("Device: " + idx + " RSSI: " + result.getRssi());
-                scannerListener.updateScanResult(result.getRssi(), idx);
+                int rssi = result.getRssi();
+                if (dataCollectingMode)
+                    scannerListener.updateScanResult(rssi, idx);
+                else {
+                    flag |= (1 << idx);
+                    rssiList[idx] = rssi;
+                    if (true) {
+                        //if (flag == 7) {
+                        //getPosition();
+                        System.out.println("new position");
+                        scannerListener.updatePosition(100, 100);
+                        flag = 0;
+                    } else
+                        System.out.println("no new position");
+                }
             }
         }
     };
@@ -62,6 +81,8 @@ public class DeviceScanner extends Service {
 
     public interface ScannerListener {
         void updateScanResult(final int rssi, final int idx);
+
+        void updatePosition(final int x, final int y);
     }
 
     public void setScannerListener(ScannerListener listener) {
@@ -77,7 +98,7 @@ public class DeviceScanner extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         bluetoothScanner.stopScan(scanCallback);
-        System.out.println(database.get());
+        System.out.println(database.getRSSI());
         return true;
     }
 
@@ -105,12 +126,12 @@ public class DeviceScanner extends Service {
                 @Override
                 public void run() {
                     //mScanning = false;
-                    bluetoothScanner.startScan(scanFilters,scanSettings,scanCallback);
+                    bluetoothScanner.startScan(scanFilters, scanSettings, scanCallback);
                 }
             }, SCAN_PERIOD);
 
             //mScanning = true;
-            bluetoothScanner.startScan(scanFilters,scanSettings,scanCallback);
+            bluetoothScanner.startScan(scanFilters, scanSettings, scanCallback);
         } else {
             //mScanning = false;
             bluetoothScanner.stopScan(scanCallback);
@@ -124,8 +145,11 @@ public class DeviceScanner extends Service {
         return Arrays.asList(MainActivity.getDeviceAddrs()).indexOf(addr);
     }
 
-    public Database getDatabase(){
+    public Database getDatabase() {
         return database;
     }
 
+    public void setDataCollectingMode(boolean dataCollectingMode) {
+        this.dataCollectingMode = dataCollectingMode;
+    }
 }

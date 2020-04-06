@@ -3,6 +3,8 @@ package com.example.indoorapplication.ui.home;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,52 +12,68 @@ import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-
 import com.example.indoorapplication.DeviceScanner;
-import com.example.indoorapplication.MapImageView;
 import com.example.indoorapplication.R;
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
+import indoormaps.ninepatch.com.library.IndoorMapsView;
+import indoormaps.ninepatch.com.library.Marker;
+import indoormaps.ninepatch.com.library.Style;
+import indoormaps.ninepatch.com.library.callback.OnMapViewInizializate;
+import indoormaps.ninepatch.com.library.zoom.ZOOM;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
+import java.util.Random;
+
 import static android.content.Context.BIND_AUTO_CREATE;
 
-import java.util.*;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class HomeFragment extends Fragment {
-
+    int i = 0;
+    private Marker marker;
     private boolean isActive;
-    private int flag = 0;
-    private int[] rssiList = {0, 0, 0};
+    private IndoorMapsView indoorMapsView;
+    // private MapLayout mapLayout;
     private HomeViewModel homeViewModel;
     private DeviceScanner scanner;
     private ServiceConnection scannerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             scanner = ((DeviceScanner.ScannerBinder) iBinder).getScanner();
+            scanner.setDataCollectingMode(false);
             scanner.setScannerListener(new DeviceScanner.ScannerListener() {
                 @Override
                 public void updateScanResult(final int rssi, final int idx) {
+                }
+
+                @Override
+                public void updatePosition(final int x, final int y) {
                     if (getActivity() == null || !isActive)
                         return;
-                    getActivity().runOnUiThread(new Runnable() {
+                    Handler handler = new Handler();
+                    getView().post(new Runnable() {
                         @Override
                         public void run() {
-                            updateRssi(rssi, idx);
-                            //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
-                            //scanner.getDatabase().add(distance, rssi);
-                            //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
+                            displayPosition(0.2, 0.2);
                         }
                     });
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            displayPosition(0.1,0.4);//displayPosition(x, y);
+//                            //Integer distance = Integer.parseInt(distanceEditText.getText().toString());
+//                            //scanner.getDatabase().add(distance, rssi);
+//                            //rssiTextView.setText("Device: " + idx + " RSSI: " + rssi);
+//                        }
+//                    });
                 }
             });
         }
@@ -70,9 +88,25 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        ((ImageView) root.findViewById(R.id.map_view)).setImageResource(R.drawable.zxc);
-        startScan();
-        listenForUpdatingPosition();
+        indoorMapsView = (IndoorMapsView) root.findViewById(R.id.map_view);
+        indoorMapsView.getIndoorViewListener().setOnMapViewInizializate(new OnMapViewInizializate() {
+            @Override
+            public void onMapLoading() {
+
+            }
+
+            @Override
+            public void onMapinizializate() {
+                indoorMapsView.init("mappa2.png", ZOOM.LEVEL4); //image from assets or put link
+                indoorMapsView.setBackgroundColorRes(R.color.colorPrimary);
+
+            }
+        });
+
+//        mapLayout = root.findViewById(R.id.map_layout);
+//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.zxc);
+//        mapLayout.setImgBg(bitmap.getWidth(), bitmap.getHeight(), R.drawable.zxc);
+        //listenForUpdatingPosition();
         //getPosition();
         return root;
     }
@@ -93,26 +127,40 @@ public class HomeFragment extends Fragment {
         isActive = true;
     }
 
-    private void listenForUpdatingPosition() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    if (flag == 7) {
-                        //getPosition();
-                        System.out.println("new position");
-                        flag = 0;
-                    } else
-                        System.out.println("no new position");
-                }
-            }
-        }, 1000);
-    }
+//    private void listenForUpdatingPosition() {
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    if (flag == 7) {
+//                        //getPosition();
+//                        System.out.println("new position");
+//                        flag = 0;
+//                    } else
+//                        System.out.println("no new position");
+//                }
+//            }
+//        }, 1000);
+//    }
 
-    private void updateRssi(int rssi, int idx) {
-        System.out.println("=====" + rssi + "," + idx + "=============");
-        flag |= (1 << idx);
-        rssiList[idx] = rssi;
+    private void displayPosition(double x, double y) {
+        Marker prevMarker = marker;
+        marker = new Marker(getContext());
+        //marker.setId(0);
+        marker.setLat(i);
+        marker.setLon(i);
+        i += 15;
+        marker.setName("pos");
+        marker.setImageLink("pointer.png");//from assets or put link
+        //set Marker Style
+        Style style = new Style(getContext());
+        style.setLabelColor(R.color.colorAccent);
+        style.setLabelPx(22);
+        style.setShowLabel(true);
+        marker.setStyle(style);
+        if (prevMarker != null)
+            indoorMapsView.removeMarker(prevMarker);
+        indoorMapsView.addMarker(marker);
     }
 
     private void getPosition() {
