@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import com.example.indoorapplication.ui.home.HomeFragment;
+import com.example.indoorapplication.util.Regression;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,9 +25,9 @@ import java.util.*;
 @SuppressLint("NewApi")
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends AppCompatActivity {
-    private static final String[] DEFAULT_DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61", "C4:CE:DA:A2:25:62"};
+    private static final String[] DEFAULT_DEVICE_ADDRS = {"F6:6E:39:E8:EF:28", "C4:CE:DA:A2:25:61", "CB:DE:EF:D0:07:B1"};
     private static final Double[][] DEFAULT_DEVICE_POSITIONS = {{0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}};
-
+    private HomeFragment homeFragment;
     private static String[] deviceAddrs;
     private static Double[][] devicePositions;
 
@@ -34,15 +36,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
+//        BottomNavigationView navView = findViewById(R.id.nav_view);
+//        // Passing each menu ID as a set of Ids because each
+//        // menu should be considered as top level destinations.
+//        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+//                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
+//                .build();
+//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+//        NavigationUI.setupWithNavController(navView, navController);
+
+        Regression.initialize(getApplicationContext());
 
         deviceAddrs = Arrays.copyOf(DEFAULT_DEVICE_ADDRS, DEFAULT_DEVICE_ADDRS.length);
         devicePositions = Arrays.copyOf(DEFAULT_DEVICE_POSITIONS, DEFAULT_DEVICE_POSITIONS.length);
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         devicePositions[idx] = new Double[]{x, y};
     }
 
-    public static String[] getDeviceAddrs(){
+    public static String[] getDeviceAddrs() {
         return deviceAddrs;
     }
 

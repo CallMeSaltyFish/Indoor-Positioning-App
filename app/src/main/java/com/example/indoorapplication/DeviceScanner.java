@@ -26,7 +26,6 @@ import java.util.*;
 public class DeviceScanner extends Service {
 
     //    private static final String[] DEVICE_UUIDS = {"0112233445566778899AABBCCDDEEFF0"};
-//    private static final String[] DEVICE_ADDRS = {"F9:C2:6E:7D:8A:7F", "C4:CE:DA:A2:25:61"};
     // Stops scanning after given seconds.
     private boolean dataCollectingMode = false;
     private static final long SCAN_PERIOD = 100000;
@@ -59,7 +58,8 @@ public class DeviceScanner extends Service {
                 else {
                     flag |= (1 << idx);
                     rssiList[idx] = rssi;
-                    if (true) {   //if (flag == 7) {
+                    if (true) {
+                        //if (flag == 7) {
                         //getPosition();
                         System.out.println("new position");
                         scannerListener.updatePosition(100, 100);
@@ -98,7 +98,7 @@ public class DeviceScanner extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         bluetoothScanner.stopScan(scanCallback);
-        System.out.println(database.get());
+        System.out.println(database.getRSSI());
         return true;
     }
 
