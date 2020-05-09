@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
@@ -29,6 +31,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
 public class HomeFragment extends Fragment {
     private Marker marker;
     private boolean isActive;
+    private ImageButton refreshButton;
     private IndoorMapsView indoorMapsView;
     // private MapLayout mapLayout;
     private HomeViewModel homeViewModel;
@@ -96,6 +99,15 @@ public class HomeFragment extends Fragment {
 //        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.zxc);
 //        mapLayout.setImgBg(bitmap.getWidth(), bitmap.getHeight(), R.drawable.zxc);
         //listenForUpdatingPosition();
+        refreshButton = root.findViewById(R.id.refresh_button);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("refresh");
+                stopScan();
+                startScan();
+            }
+        });
         return root;
     }
 
