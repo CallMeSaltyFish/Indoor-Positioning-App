@@ -19,10 +19,10 @@ import java.io.*;
 import java.util.*;
 
 
-public class NotificationsFragment extends Fragment {
+public class DataProcessFragment extends Fragment {
 
     private final static String DATA_FILE = "/data.txt";
-    private NotificationsViewModel notificationsViewModel;
+    private DataProcessViewModel notificationsViewModel;
     private Button dataProcessingButton;
     private Button dataExportButton;
     private Button dataImportButton;
@@ -33,7 +33,7 @@ public class NotificationsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         notificationsViewModel =
-                ViewModelProviders.of(this).get(NotificationsViewModel.class);
+                ViewModelProviders.of(this).get(DataProcessViewModel.class);
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
         chartView = root.findViewById(R.id.data_line_chart);
         dataChart = new DataChart(chartView);

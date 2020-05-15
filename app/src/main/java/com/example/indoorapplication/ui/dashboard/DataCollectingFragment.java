@@ -28,11 +28,11 @@ import java.util.*;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class DashboardFragment extends Fragment {
+public class DataCollectingFragment extends Fragment {
 
     private boolean isActive;
     private boolean isScanning;
-    private DashboardViewModel dashboardViewModel;
+    private DataCollectingViewModel dashboardViewModel;
     private Button startScanButton;
     private Button stopScanButton;
     private RSSIChart rssiChart;
@@ -81,7 +81,7 @@ public class DashboardFragment extends Fragment {
             rssiLists.add(new ArrayList<Integer>());
         isActive = false;
         isScanning = false;
-        dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
+        dashboardViewModel = ViewModelProviders.of(this).get(DataCollectingViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
         rssiTextViews = new ArrayList<>(3);
         calculatedDistanceTextViews = new ArrayList<>(3);

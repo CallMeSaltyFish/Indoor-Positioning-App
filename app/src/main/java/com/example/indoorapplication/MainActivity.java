@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         deviceAddrs = Arrays.copyOf(DEFAULT_DEVICE_ADDRS, DEFAULT_DEVICE_ADDRS.length);
         devicePositions = Arrays.copyOf(DEFAULT_DEVICE_POSITIONS, DEFAULT_DEVICE_POSITIONS.length);
 
-        //statFragment =(DashboardFragment) getSupportFragmentManager().f
         //rssiTextView = (TextView) findViewById(R.id.device_rssi);
 
         if (!((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter().isEnabled()) {

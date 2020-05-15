@@ -19,14 +19,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class SettingsFragment extends Fragment {
-    private SettingsViewModel settingsViewModel;
+public class DeviceSettingsFragment extends Fragment {
+    private DeviceSettingsViewModel settingsViewModel;
     private ListView deviceView;
     private ArrayList<HashMap<String, Object>> deviceInfoItems;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
+        settingsViewModel = ViewModelProviders.of(this).get(DeviceSettingsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
         deviceView = root.findViewById(R.id.device_view);
         //定义一个HashMap构成的列表以键值对的方式存放数据

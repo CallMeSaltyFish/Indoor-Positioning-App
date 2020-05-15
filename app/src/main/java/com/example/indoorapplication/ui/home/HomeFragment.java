@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onMapinizializate() {
-                indoorMapsView.init("mappa2.png", ZOOM.LEVEL4); //image from assets or put link
+                indoorMapsView.init("indoormap.jpg", ZOOM.LEVEL4); //image from assets or put link
                 indoorMapsView.setBackgroundColorRes(R.color.colorPrimary);
 
             }
